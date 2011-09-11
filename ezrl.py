@@ -6,7 +6,7 @@ from libtcodpy import *
 class InputProcessor:
 	def __init__(self):
 		self.inputToCommand = {
-			ord('x')	: 'exit',
+			ord('x')	: 'sys exit',
 			KEY_UP		: 'p move up',
 			KEY_DOWN	: 'p move down',
 			KEY_LEFT	: 'p move left',
@@ -80,32 +80,41 @@ class Engine:
 	def __init__(self):
 		self.game = Game()
 		
-	def _vMove(self, e, d):
-		if d == 'up': return e.getY() > 0
-		if d == 'down': return e.getY() < self.game.getMap().getH() - 1
-		if d == 'left': return e.getX() > 0
-		if d == 'right': return e.getX() < self.game.getMap().getW() - 1
+	def _vEntityMove(self, entity, adj):
+		if adj == 'up': return entity.getY() > 0
+		if adj == 'down': return entity.getY() < self.game.getMap().getH() - 1
+		if adj == 'left': return entity.getX() > 0
+		if adj == 'right': return entity.getX() < self.game.getMap().getW() - 1
 
-	def _verifyCommand(self, c, e):
-		if c[0:5] == 'move ': return self._vMove(e, c[5:])
+	def _verifyEntityCommand(self, entity, verb, adj):
+		if verb == 'move': return self._vEntityMove(entity, adj)
 		return 0
 		
-	def _cMove(self, e, d):
-		if d == 'up': e.decY()
-		if d == 'down': e.incY()
-		if d == 'left': e.decX()
-		if d == 'right': e.incX()
-		e.incSteps()
+	def _cEntityMove(self, entity, adj):
+		if adj == 'up': entity.decY()
+		if adj == 'down': entity.incY()
+		if adj == 'left': entity.decX()
+		if adj == 'right': entity.incX()
+		entity.incSteps()
 
-	def _processCommand(self, c, e):
-		if (not self._verifyCommand(c, e)): return
-		if c[0:5] == 'move ': self._cMove(e, c[5:])
+	def _processEntityCommand(self, entity, verb, adj):
+		if (not self._verifyEntityCommand(entity, verb, adj)): return
+		if verb == 'move': self._cEntityMove(entity, adj)
+		
+	def _processSysCommand(self, verb):
+		if verb == 'exit': exit()
 
 	def processCommands(self, commands):
 		for c in commands:
-			#print c
-			if c == 'exit': exit()
-			if c[0:2] == 'p ': self._processCommand(c[2:], self.game.getPlayer())
+			a = c.split()
+			noun, verb = a[0], a[1]
+			if (len(a) == 3):
+				adj = a[2]
+			else:
+				adj = None
+			
+			if noun == 'sys': self._processSysCommand(verb)
+			if noun == 'p': self._processEntityCommand(self.game.getPlayer(), verb, adj)
 
 	def getGame(self): return self.game
 
