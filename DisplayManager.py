@@ -1,5 +1,6 @@
 from libtcodpy import *
 from Engine import MapTile
+from datetime import date
 
 class ConsoleItem:
 	def __init__(self, i, color, bcolor=None):
@@ -10,6 +11,18 @@ class ConsoleItem:
 	def getI(self): return self.i
 	def getColor(self): return self.color
 	def getBColor(self): return self.bcolor
+	
+class ConsoleItemGenerator:
+	def createConsoleItem(self, mapTile):
+		type = mapTile.getType()
+		if type == MapTile.T_FLOOR: return ConsoleItem('.', white)
+		if type == MapTile.T_HWALL: return ConsoleItem('-', Color(188, 188, 188))
+		if type == MapTile.T_VWALL: return ConsoleItem('|', Color(188, 188, 188))
+		if type == MapTile.T_XWALL: return ConsoleItem('+', Color(188, 188, 188))
+		if type == MapTile.T_DOOR:  
+			if mapTile.getProp('open') == 1: return ConsoleItem('o', Color(188, 188, 188))
+			if mapTile.getProp('open') == 0: return ConsoleItem('x', Color(188, 188, 188))			
+		if type == MapTile.T_NONE:	return ConsoleItem('#', blue)
 
 class Console:
 	def __init__(self, consoleWidth, consoleHeight, consoleTitle):
@@ -35,28 +48,17 @@ class DisplayManager:
 	def __init__(self):
 		self.C_HEIGHT = 64
 		self.C_WIDTH = 32
-		self.C_TITLE = 'New Game Sept-10-2011'
-		self.mapOffset = (3, 3)
-		self.statusOffset = (2, 20)
-		
-		self.mapTileTypeToConsoleItem = {
-			MapTile.T_FLOOR : ConsoleItem('.', white),
-			MapTile.T_HWALL : ConsoleItem('-', Color(188, 188, 188)),
-			MapTile.T_VWALL : ConsoleItem('|', Color(188, 188, 188)),
-			MapTile.T_XWALL : ConsoleItem('+', Color(188, 188, 188)),
-			MapTile.T_NONE	: None
-		}
-		
+		self.C_TITLE = 'New Game ' + date.today().strftime('%A %d-%B-%Y')
 		self.console = Console(self.C_HEIGHT, self.C_WIDTH, self.C_TITLE)
-		
-	def _mapTileTypeToConsoleItem(self, mapTileType):
-		return self.mapTileTypeToConsoleItem[mapTileType]
+
+		self.statusOffset = (1, 1)		
+		self.mapOffset = (3, 3)
+		self.M_HORZ_DRAW_DISTANCE = 6
+		self.M_VERT_DRAW_DISTANCE = 4
 		
 	def _mapTileToConsoleItem(self, mapTile):
-		if mapTile.getType() == MapTile.T_DOOR:
-			if mapTile.getProp('open') == 1: return ConsoleItem('o', Color(188, 188, 188))
-			if mapTile.getProp('open') == 0: return ConsoleItem('x', Color(188, 188, 188))
-		
+		return ConsoleItemGenerator().createConsoleItem(mapTile)
+
 	def _playerToConsoleItem(self, player):
 		return ConsoleItem('@', white)
 
@@ -72,17 +74,19 @@ class DisplayManager:
 		self.console.putConsoleString(self.statusOffset[0], self.statusOffset[1], self._statusToConsoleItem(player))
 		
 		#draw map
-		for y in range(map.getH()):
-			for x in range(map.getW()):
-				mapTile = map.getTile(x, y)
-				try:
-					consoleItem = self._mapTileTypeToConsoleItem(mapTile.getType())
-				except KeyError:
-					consoleItem = self._mapTileToConsoleItem(mapTile)
+		i = 0
+		for y in range(player.getY()-self.M_VERT_DRAW_DISTANCE, player.getY()+self.M_VERT_DRAW_DISTANCE+1):
+			j = 0
+			for x in range(player.getX() - self.M_HORZ_DRAW_DISTANCE, player.getX() + self.M_HORZ_DRAW_DISTANCE+1):
+				consoleItem = self._mapTileToConsoleItem(map.getTile(x, y))
 				if consoleItem != None:
-					self.console.putConsoleChar(self.mapOffset[0] + x, self.mapOffset[1] + y, consoleItem)
+					self.console.putConsoleChar(self.mapOffset[0] + j, self.mapOffset[1] + i, consoleItem)
+				j += 1
+			i += 1
 
 		#draw player
-		self.console.putConsoleChar(self.mapOffset[0] + player.getX(), self.mapOffset[1] + player.getY(), self._playerToConsoleItem(player))
+		self.console.putConsoleChar(self.mapOffset[0] + self.M_HORZ_DRAW_DISTANCE, \
+									self.mapOffset[1] + self.M_VERT_DRAW_DISTANCE, \
+									self._playerToConsoleItem(player))
 		
 		self.console.flush()
