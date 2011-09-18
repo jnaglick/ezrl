@@ -11,27 +11,23 @@ class Engine:
 
 		#create new player
 		getPlayerStartCoords = randomMapMaker.getPlayerStartCoords()
-		player = Player(getPlayerStartCoords[0], getPlayerStartCoords[1])		
+		player = Player(getPlayerStartCoords[0], getPlayerStartCoords[1])
 		
 		#create game
 		self.game = Game(player, map)
 		
 	def _vTileWalkable(self, x, y):
-		return self.game.getMap().getTile(x, y).getProp('walkable') == 1
+		map = self.game.getMap()
+		return x >= 0 and x < map.getW() and y >= 0 and y < map.getH() and map.getTile(x, y).getProp('walkable')
 		
-	def _vEntityMove(self, entity, adj):	
-		if adj == 'up': 
-			return entity.getY() > 0 \
-				   and self._vTileWalkable(entity.getX(), entity.getY() - 1)
-		if adj == 'down': 
-			return entity.getY() < self.game.getMap().getH() - 1 \
-				   and self._vTileWalkable(entity.getX(), entity.getY() + 1)
-		if adj == 'left': 
-			return entity.getX() > 0 \
-				   and self._vTileWalkable(entity.getX() - 1, entity.getY())
-		if adj == 'right': 
-			return entity.getX() < self.game.getMap().getW() - 1 \
-				   and self._vTileWalkable(entity.getX() + 1, entity.getY())
+	def _vEntityMove(self, entity, adj):
+		x, y = entity.getX(), entity.getY()
+		return {
+			'up' : self._vTileWalkable(x, y - 1),
+			'down' : self._vTileWalkable(x, y + 1),
+			'left' : self._vTileWalkable(x - 1, y),
+			'right' : self._vTileWalkable(x + 1, y)
+		}[adj]
 
 	def _verifyEntityCommand(self, entity, verb, adj):
 		if verb == 'move': return self._vEntityMove(entity, adj)
