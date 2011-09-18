@@ -40,6 +40,8 @@ class DisplayManager:
 				consoleItem = self._mapTileToConsoleItem(map.getTile(x, y))
 				if consoleItem != None:
 					self.console.putConsoleChar(self.mapOffset[0] + j, self.mapOffset[1] + i, consoleItem)
+				else:
+					self.console.clearConsoleChar(self.mapOffset[0] + j, self.mapOffset[1] + i)
 				j += 1
 			i += 1
 
@@ -63,20 +65,26 @@ class ConsoleItem:
 class ConsoleItemGenerator:
 	def createConsoleItem(self, mapTile):
 		consoleItem = None
-		type = mapTile.getType()
-		if type == MapTile.T_FLOOR:   consoleItem = ConsoleItem('.', white)
-		elif type == MapTile.T_HWALL: consoleItem = ConsoleItem('-', Color(188, 188, 188))
-		elif type == MapTile.T_VWALL: consoleItem = ConsoleItem('|', Color(188, 188, 188))
-		elif type == MapTile.T_XWALL: consoleItem = ConsoleItem('+', Color(188, 188, 188))
-		elif type == MapTile.T_NONE:  consoleItem = ConsoleItem('#', blue)
-		elif type == MapTile.T_DOOR:  
-			if mapTile.getProp('open') == 1:   consoleItem = ConsoleItem('o', Color(188, 188, 188))
-			elif mapTile.getProp('open') == 0: consoleItem = ConsoleItem('x', Color(188, 188, 188))
+		if mapTile != None:
+			type = mapTile.getType()
+			if type == MapTile.T_FLOOR:   consoleItem = ConsoleItem('.', white)
+			elif type == MapTile.T_HWALL: consoleItem = ConsoleItem('-', Color(188, 188, 188))
+			elif type == MapTile.T_VWALL: consoleItem = ConsoleItem('|', Color(188, 188, 188))
+			elif type == MapTile.T_XWALL: consoleItem = ConsoleItem('+', Color(188, 188, 188))
+			elif type == MapTile.T_NONE:  consoleItem = ConsoleItem('#', blue)
+			elif type == MapTile.T_DOOR:  
+				if mapTile.getProp('open') == 1:   consoleItem = ConsoleItem('o', Color(188, 188, 188))
+				elif mapTile.getProp('open') == 0: consoleItem = ConsoleItem('x', Color(188, 188, 188))
 		return consoleItem
 
 class Console:
 	def __init__(self, consoleWidth, consoleHeight, consoleTitle):
 		self.c = console_init_root(consoleWidth, consoleHeight, consoleTitle, False)
+		
+	def clearConsoleChar(self, x, y):
+		console_set_char(self.c, x, y, None)
+		console_set_fore(self.c, x, y, None)
+		console_set_back(self.c, x, y, None)
 		
 	def putConsoleChar(self, x, y, ConsoleItem):
 		console_set_char(self.c, x, y, ConsoleItem.getI())

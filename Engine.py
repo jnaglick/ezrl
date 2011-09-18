@@ -70,8 +70,12 @@ class Map:
 		for i in range(w * h): self.tiles.append(mapTileGenerator.createTile(MapTile.T_NONE))
 		
 	def setTile(self, x, y, tile): self.tiles[(y * self.w) + x] = tile
-	def getTile(self, x, y): return self.tiles[(y * self.w) + x]
-	
+	def getTile(self, x, y): 
+		if x >= 0 and y >= 0 and x < self.w and y < self.h:
+			return self.tiles[(y * self.w) + x]
+		else:
+			return None
+			
 	def getW(self): return self.w
 	def getH(self): return self.h
 
