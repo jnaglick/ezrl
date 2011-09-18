@@ -2,48 +2,6 @@ from libtcodpy import *
 from Engine import MapTile
 from datetime import date
 
-class ConsoleItem:
-	def __init__(self, i, color, bcolor=None):
-		self.i = i
-		self.color = color
-		self.bcolor = bcolor
-		
-	def getI(self): return self.i
-	def getColor(self): return self.color
-	def getBColor(self): return self.bcolor
-	
-class ConsoleItemGenerator:
-	def createConsoleItem(self, mapTile):
-		type = mapTile.getType()
-		if type == MapTile.T_FLOOR: return ConsoleItem('.', white)
-		if type == MapTile.T_HWALL: return ConsoleItem('-', Color(188, 188, 188))
-		if type == MapTile.T_VWALL: return ConsoleItem('|', Color(188, 188, 188))
-		if type == MapTile.T_XWALL: return ConsoleItem('+', Color(188, 188, 188))
-		if type == MapTile.T_DOOR:  
-			if mapTile.getProp('open') == 1: return ConsoleItem('o', Color(188, 188, 188))
-			if mapTile.getProp('open') == 0: return ConsoleItem('x', Color(188, 188, 188))			
-		if type == MapTile.T_NONE:	return ConsoleItem('#', blue)
-
-class Console:
-	def __init__(self, consoleWidth, consoleHeight, consoleTitle):
-		self.c = console_init_root(consoleWidth, consoleHeight, consoleTitle, False)
-		
-	def putConsoleChar(self, x, y, ConsoleItem):
-		console_set_char(self.c, x, y, ConsoleItem.getI())
-		console_set_fore(self.c, x, y, ConsoleItem.getColor())
-		if (ConsoleItem.getBColor() != None): console_set_back(self.c, x, y, ConsoleItem.getBColor())
-		
-	def putConsoleString(self, x, y, ConsoleItem):
-		console_print_left(self.c, x, y, BKGND_NONE, ConsoleItem.getI())
-		for i in range(0, len(ConsoleItem.getI())): 
-			console_set_fore(self.c, x+i, y, ConsoleItem.getColor())
-		if (ConsoleItem.getBColor() != None):
-			for i in range(0, len(ConsoleItem.getI())): 
-				console_set_back(self.c, x+i, y, ConsoleItem.getBColor())
-		
-	def flush(self):
-		console_flush()
-
 class DisplayManager:
 	def __init__(self):
 		self.C_HEIGHT = 64
@@ -90,3 +48,45 @@ class DisplayManager:
 									self._playerToConsoleItem(player))
 		
 		self.console.flush()
+
+class ConsoleItem:
+	def __init__(self, i, color, bcolor=None):
+		self.i = i
+		self.color = color
+		self.bcolor = bcolor
+		
+	def getI(self): return self.i
+	def getColor(self): return self.color
+	def getBColor(self): return self.bcolor
+	
+class ConsoleItemGenerator:
+	def createConsoleItem(self, mapTile):
+		type = mapTile.getType()
+		if type == MapTile.T_FLOOR: return ConsoleItem('.', white)
+		if type == MapTile.T_HWALL: return ConsoleItem('-', Color(188, 188, 188))
+		if type == MapTile.T_VWALL: return ConsoleItem('|', Color(188, 188, 188))
+		if type == MapTile.T_XWALL: return ConsoleItem('+', Color(188, 188, 188))
+		if type == MapTile.T_DOOR:  
+			if mapTile.getProp('open') == 1: return ConsoleItem('o', Color(188, 188, 188))
+			if mapTile.getProp('open') == 0: return ConsoleItem('x', Color(188, 188, 188))			
+		if type == MapTile.T_NONE:	return ConsoleItem('#', blue)
+
+class Console:
+	def __init__(self, consoleWidth, consoleHeight, consoleTitle):
+		self.c = console_init_root(consoleWidth, consoleHeight, consoleTitle, False)
+		
+	def putConsoleChar(self, x, y, ConsoleItem):
+		console_set_char(self.c, x, y, ConsoleItem.getI())
+		console_set_fore(self.c, x, y, ConsoleItem.getColor())
+		if (ConsoleItem.getBColor() != None): console_set_back(self.c, x, y, ConsoleItem.getBColor())
+		
+	def putConsoleString(self, x, y, ConsoleItem):
+		console_print_left(self.c, x, y, BKGND_NONE, ConsoleItem.getI())
+		for i in range(0, len(ConsoleItem.getI())): 
+			console_set_fore(self.c, x+i, y, ConsoleItem.getColor())
+		if (ConsoleItem.getBColor() != None):
+			for i in range(0, len(ConsoleItem.getI())): 
+				console_set_back(self.c, x+i, y, ConsoleItem.getBColor())
+		
+	def flush(self):
+		console_flush()
