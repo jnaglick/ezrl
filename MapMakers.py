@@ -7,10 +7,8 @@ class MapMaker:
 	
 	def __init__(self, w, h):
 		self.map = Map(w, h)
-		for x in range(w):
-			for y in range(h):
-				self.map.setTile(x, y, MapTileGenerator().createTile('none'))
-				
+		self.mapTileGenerator = MapTileGenerator()
+		
 	def getMap(self): return self.map
 				
 	def _createLineOfTiles(self, x_start, y_start, len, dir, tileType, tileTypeInteractions=None):
@@ -28,7 +26,7 @@ class MapMaker:
 				try: tileTypeToSet = tileTypeInteractions[self.map.getTile(x_delta, y_delta).getType()]
 				except KeyError: None
 					
-			self.map.setTile(x_delta, y_delta, MapTileGenerator().createTile(tileTypeToSet))
+			self.map.setTile(x_delta, y_delta, self.mapTileGenerator.createTile(tileTypeToSet))
 
 	def createHWall(self, x, y, len):
 		self._createLineOfTiles(x, y, len, MapMaker.HORZ, MapTile.T_HWALL, {MapTile.T_VWALL: MapTile.T_XWALL})
@@ -53,7 +51,7 @@ class MapMaker:
 		self.createVWall(x + w + 1, y, h + 2)
 		for i in range(w):
 			for j in range(h):
-				self.map.setTile(x + i + 1, y + j + 1, MapTileGenerator().createTile(MapTile.T_FLOOR))
+				self.map.setTile(x + i + 1, y + j + 1, self.mapTileGenerator.createTile(MapTile.T_FLOOR))
 
 class RandomMapMaker(MapMaker):
 	def __init__(self, w, h):

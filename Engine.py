@@ -66,7 +66,8 @@ class Map:
 		self.w = w
 		self.h = h
 		self.tiles = []
-		for i in range(w * h): self.tiles.append(MapTileGenerator().createTile(MapTile.T_NONE))
+		mapTileGenerator = MapTileGenerator()
+		for i in range(w * h): self.tiles.append(mapTileGenerator.createTile(MapTile.T_NONE))
 		
 	def setTile(self, x, y, tile): self.tiles[(y * self.w) + x] = tile
 	def getTile(self, x, y): return self.tiles[(y * self.w) + x]
@@ -85,21 +86,21 @@ class MapTile:
 	def __init__(self, type, props):
 		self.type = type
 		self.props = props
-		
+
 	def getType(self): return self.type
 	def getProp(self, k): return self.props[k]
 
 class MapTileGenerator:
 	def createTile(self, type):
-		if type == MapTile.T_NONE:
-			return MapTile(type, {'walkable': 0, 'opacity': 1})
-		if type == MapTile.T_FLOOR:
-			return MapTile(type, {'walkable': 1, 'opacity': 0})
-		if (MapTile.T_HWALL, MapTile.T_VWALL, MapTile.T_XWALL).count(type) > 0:
-			return MapTile(type, {'walkable': 0, 'opacity': 1})
-		if type == MapTile.T_DOOR:
-			return MapTile(type, {'walkable': 1, 'opacity': 0, 'open': 1})
-
+		tile = None
+		if type == MapTile.T_NONE: 	  tile = MapTile(MapTile.T_NONE,  {'walkable': 0, 'opacity': 1})
+		elif type == MapTile.T_FLOOR: tile = MapTile(MapTile.T_FLOOR, {'walkable': 1, 'opacity': 0})
+		elif type == MapTile.T_HWALL: tile = MapTile(MapTile.T_HWALL, {'walkable': 0, 'opacity': 1})
+		elif type == MapTile.T_VWALL: tile = MapTile(MapTile.T_VWALL, {'walkable': 0, 'opacity': 1})
+		elif type == MapTile.T_XWALL: tile = MapTile(MapTile.T_XWALL, {'walkable': 0, 'opacity': 1})
+		elif type == MapTile.T_DOOR:  tile = MapTile(MapTile.T_DOOR,  {'walkable': 1, 'opacity': 0, 'open': 1})
+		return tile
+		
 class Player:
 	def __init__(self, x, y):
 		self.x = x
