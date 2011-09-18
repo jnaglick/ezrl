@@ -8,6 +8,7 @@ class DisplayManager:
 		self.C_WIDTH = 32
 		self.C_TITLE = 'New Game ' + date.today().strftime('%A %d-%B-%Y')
 		self.console = Console(self.C_HEIGHT, self.C_WIDTH, self.C_TITLE)
+		self.consoleItemGenerator = ConsoleItemGenerator()
 
 		self.statusOffset = (1, 1)		
 		self.mapOffset = (3, 3)
@@ -15,7 +16,7 @@ class DisplayManager:
 		self.M_VERT_DRAW_DISTANCE = 4
 		
 	def _mapTileToConsoleItem(self, mapTile):
-		return ConsoleItemGenerator().createConsoleItem(mapTile)
+		return self.consoleItemGenerator.createConsoleItem(mapTile)
 
 	def _playerToConsoleItem(self, player):
 		return ConsoleItem('@', white)
@@ -61,15 +62,17 @@ class ConsoleItem:
 	
 class ConsoleItemGenerator:
 	def createConsoleItem(self, mapTile):
+		consoleItem = None
 		type = mapTile.getType()
-		if type == MapTile.T_FLOOR: return ConsoleItem('.', white)
-		if type == MapTile.T_HWALL: return ConsoleItem('-', Color(188, 188, 188))
-		if type == MapTile.T_VWALL: return ConsoleItem('|', Color(188, 188, 188))
-		if type == MapTile.T_XWALL: return ConsoleItem('+', Color(188, 188, 188))
-		if type == MapTile.T_DOOR:  
-			if mapTile.getProp('open') == 1: return ConsoleItem('o', Color(188, 188, 188))
-			if mapTile.getProp('open') == 0: return ConsoleItem('x', Color(188, 188, 188))			
-		if type == MapTile.T_NONE:	return ConsoleItem('#', blue)
+		if type == MapTile.T_FLOOR:   consoleItem = ConsoleItem('.', white)
+		elif type == MapTile.T_HWALL: consoleItem = ConsoleItem('-', Color(188, 188, 188))
+		elif type == MapTile.T_VWALL: consoleItem = ConsoleItem('|', Color(188, 188, 188))
+		elif type == MapTile.T_XWALL: consoleItem = ConsoleItem('+', Color(188, 188, 188))
+		elif type == MapTile.T_NONE:  consoleItem = ConsoleItem('#', blue)
+		elif type == MapTile.T_DOOR:  
+			if mapTile.getProp('open') == 1:   consoleItem = ConsoleItem('o', Color(188, 188, 188))
+			elif mapTile.getProp('open') == 0: consoleItem = ConsoleItem('x', Color(188, 188, 188))
+		return consoleItem
 
 class Console:
 	def __init__(self, consoleWidth, consoleHeight, consoleTitle):
