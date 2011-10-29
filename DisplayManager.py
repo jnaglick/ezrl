@@ -71,6 +71,7 @@ class ConsoleItemGenerator:
 			elif type == MapTile.T_HWALL: consoleItem = ConsoleItem('#', Color(188, 188, 188)) # -
 			elif type == MapTile.T_VWALL: consoleItem = ConsoleItem('#', Color(188, 188, 188)) # |
 			elif type == MapTile.T_XWALL: consoleItem = ConsoleItem('#', Color(148, 148, 148)) # +
+			elif type == MapTile.T_HALL:  consoleItem = ConsoleItem('*', Color(188, 188, 188))
 			elif type == MapTile.T_NONE:  consoleItem = ConsoleItem('~', Color(0, 0, 127))
 			elif type == MapTile.T_DOOR:  
 				if mapTile.getProp('open') == 1:   consoleItem = ConsoleItem('o', Color(188, 188, 188))

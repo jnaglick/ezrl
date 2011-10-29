@@ -1,61 +1,222 @@
-from Engine import Map, MapTile, MapTileGenerator
-from random import randint
+from Engine import Map, MapTile
+from random import randint, choice
 
 class MapMaker:
-	VERT, HORZ = 'v', 'h'
-
 	def __init__(self, w, h):
 		self.map = Map(w, h)
 		self.mapTileGenerator = MapTileGenerator()
+		self.makeMap()
 		
 	def getMap(self): return self.map
 	
-	def _create2dTiles(self, d_start, d_end, o, dir, tileType, tileTypeInteractions=None):
-		if dir == MapMaker.HORZ: y = o
-		else: x = o
-		for d in range(d_start, d_end):
-			if dir == MapMaker.HORZ: x = d
-			else: y = d
-			tileTypeToSet = tileType
-			if tileTypeInteractions != None:
-				try: tileTypeToSet = tileTypeInteractions[self.map.getTile(x, y).getType()]
-				except KeyError: None
-			self.map.setTile(x, y, self.mapTileGenerator.createTile(tileTypeToSet))	
-			
-	def _createHorzTiles(self, x_start, x_end, y, tileType, tileTypeInteractions=None):
-		self._create2dTiles(x_start, x_end, y, MapMaker.HORZ, tileType, tileTypeInteractions)
-		
-	def _createVertTiles(self, y_start, y_end, x, tileType, tileTypeInteractions=None):
-		self._create2dTiles(y_start, y_end, x, MapMaker.VERT, tileType, tileTypeInteractions)
+	def getPlayerStartCoords(self): raise NotImplementedError
+	def makeMap(self): raise NotImplementedError
+	
+	def drawMapTileRectangle(self, rect):
+		for w in range(0, rect.w):
+			for h in range(0, rect.h):
+				tileTypeToSet = rect.tileType
+				if rect.tileTypeInteractions != None:
+					targetTile = self.map.getTile(rect.x + w, rect.y + h)
+					if targetTile != None:
+						try: tileTypeToSet = rect.tileTypeInteractions[targetTile.getType()]
+						except KeyError: None
+				self.map.setTile(rect.x + w, rect.y + h, self.mapTileGenerator.createTile(tileTypeToSet))
 
-	def createHorzWall(self, x_start, x_end, y):
-		self._createHorzTiles(x_start, x_end, y, MapTile.T_HWALL, {MapTile.T_VWALL: MapTile.T_XWALL})
+class TestMapMaker(MapMaker):
+	def __init__(self):
+		MapMaker.__init__(self, 9, 9)
 
-	def createVertWall(self, y_start, y_end, x):
-		self._createVertTiles(y_start, y_end, x, MapTile.T_VWALL, {MapTile.T_HWALL: MapTile.T_XWALL})
+	def getPlayerStartCoords(self): return self.playerStartCoords
+
+	def makeMap(self):
+		#Create "None" tiles
+		self.drawMapTileRectangle(MapTileRectangle(0, 0, self.map.getW(), self.map.getH(), MapTile.T_NONE))
 		
-	def createRoom(self, x, y, w, h):
-		for i in range(w):
-			for j in range(h):
-				self.map.setTile(x + i, y + j, self.mapTileGenerator.createTile(MapTile.T_FLOOR))
-		self.createHorzWall(x, x + w, y)
-		self.createHorzWall(x, x + w, y + h - 1)
-		self.createVertWall(y, y + h, x)
-		self.createVertWall(y, y + h, x + w - 1)
+		self._drawCardinalSizeRoomAtCenter(4, 4, 1)
+		
+		self.playerStartCoords = (4, 4)
+		
+	def _drawCardinalSizeRoomAtCenter(self, center_x, center_y, size):
+		room = MapMakerRoom(center_x - size, center_y - size, (2 * size) + 1, (2 * size) + 1)
+		room.draw(self)
+		return room		
 
 class RandomMapMaker(MapMaker):
-	def __init__(self, w, h):
-		MapMaker.__init__(self, w, h)
-		self.playerStartCoords = None
-		
+	def __init__(self):
+		self.SKEWS_TO_DRAW = 10
+		self.R_SUBROOM_ABS_MAX_SIZE_MIN = 3
+		self.R_SUBROOM_ABS_MAX_SIZE_MAX = 5
+		self.R_SUBROOM_TOTAL_MIN = 7
+		self.R_SUBROOM_TOTAL_MAX = 15
+		self.R_SKEW_STRENGTH_MIN = 15
+		self.R_SKEW_STRENGTH_MAX = 20
+		MapMaker.__init__(self, 199, 199) #These don't have to be odd, but it helps
+
 	def getPlayerStartCoords(self): return self.playerStartCoords
-	
-	def createRandomRoom(self):
-		x, y, w, h = randint(1, 4), randint(1, 6), randint(4, 8), randint(4, 8)
-		self.createRoom(x, y, w, h)
-		return x, y, w, h
+
+	def makeMap(self):
+		def flip(bit): return (bit + 1) % 2
+
+		#Create "None" tiles
+		self.drawMapTileRectangle(MapTileRectangle(0, 0, self.map.getW(), self.map.getH(), MapTile.T_NONE))
+
+		#Get center of map, set player start coord there
+		map_center_x, map_center_y = (self.map.getW()-1)/2, (self.map.getH()-1)/2
+		self.playerStartCoords = (map_center_x, map_center_y)
 		
-	def generateRandomMap(self):
-		#create first room, set playerStartCoords to a random tile inside of it
-		x, y, w, h = self.createRandomRoom()
-		self.playerStartCoords = (randint(x+1, x+w-2), randint(y+1, y+h-2))
+		#Lets make some map...
+		center_x, center_y = map_center_x, map_center_y
+		x_skew_dir, y_skew_dir = randint(0, 1), randint(0, 1) # pick random starting skew
+		for i in range(self.SKEWS_TO_DRAW):
+			room = self._drawRandomRoomSkew(center_x, center_y, x_skew_dir, y_skew_dir)
+			
+			# sew new center to a random floor tile in the last roomSkew
+			center_x = randint(room.x + 1, room.x + room.w - 2) # random floor x
+			center_y = randint(room.y + 1, room.y + room.h - 2) # random floor y
+			
+			# flip either the x or y skew
+			if randint(0, 1): x_skew_dir = flip(x_skew_dir) 
+			else: y_skew_dir = flip(y_skew_dir)
+
+	def _drawRandomRoomSkew(self, start_center_x, start_center_y, x_skew_dir, y_skew_dir):
+		subroom_absolute_max_size = randint(self.R_SUBROOM_ABS_MAX_SIZE_MIN, self.R_SUBROOM_ABS_MAX_SIZE_MAX)
+		subroom_total = randint(self.R_SUBROOM_TOTAL_MIN, self.R_SUBROOM_TOTAL_MAX)
+		skew_strength = randint(self.R_SKEW_STRENGTH_MIN, self.R_SKEW_STRENGTH_MAX)
+		return self._drawRoomSkew(start_center_x, start_center_y,
+											  subroom_absolute_max_size, 
+											  subroom_total, 
+											  skew_strength, 
+											  x_skew_dir, 
+											  y_skew_dir)
+	
+	# _drawRoomSkew : draws random-size cardinal rooms in a random linear skew pattern
+	# --------------------------------------------------------------------------------------------
+	# 1. Starting at (start_center_x, start_center_y), draws subroom_total square rooms of 
+	# random Cardinal Size (for more control, subroom_absolute_max_size defines the max this can be).
+	# 2. Because of the MapTileRectangles used by MapMakerRoom, these rooms are drawn additively
+	# on top of each other. Look at how tileTypeInteractions work for more information
+	# 3. Additional rooms after the first are drawn with their center point (ie, tile) 
+	# at a randomly chosen floor tile of the room previously drawn.
+	# 4. The real magic is that the randomly chosen floor tile from #3 is not chosen _completely_ randomly.
+	# Instead, the concept of Random Linear Skew is used. See _randomLinearSkew for more info
+	# 5. x_skew_dir: {True = Right, False = Left} y_skew_dir: {True = Down, False = Up}
+	def _drawRoomSkew(self, 
+					  start_center_x, start_center_y, 
+					  subroom_absolute_max_size, 
+					  subroom_total, 
+					  skew_strength, 
+					  x_skew_dir, 
+					  y_skew_dir):
+		room = self._drawRandomSizeCardinalRoom(start_center_x, start_center_y, subroom_absolute_max_size)
+		for i in range(subroom_total):
+			rand_floor_x = self._randomLinearSkew(room.x + 1, room.x + room.w - 2, skew_strength, x_skew_dir) 
+			rand_floor_y = self._randomLinearSkew(room.y + 1, room.y + room.h - 2, skew_strength, y_skew_dir)
+			newRoom = self._drawRandomSizeCardinalRoom(rand_floor_x, rand_floor_y, subroom_absolute_max_size)
+			if newRoom == False: # No more rooms could fit, end prematurely
+				return room
+			else:
+				room = newRoom
+		return room	
+
+	# dir: {True = max, False = min}
+	def _randomLinearSkew(self, r_min, r_max, strength, dir):
+		r = randint(r_min, r_max)
+		for i in range(strength):
+			if dir:
+				r = max(r, randint(r_min, r_max))
+			else:
+				r = min(r, randint(r_min, r_max))
+		return r
+
+	# Draws a cardinal room of randomly-picked size. The important part of this function
+	# is that it does not allow the room size to exceed the map boundries.
+	def _drawRandomSizeCardinalRoom(self, center_x, center_y, absolute_max_size):
+		max_size = min(absolute_max_size, 
+					   center_x,
+					   self.map.getW() - center_x - 1,
+					   center_y,
+					   self.map.getH() - center_y - 1)
+		if max_size == 0: # Room cant fit at this location
+			return False
+		else:
+			room = MapMakerCardinalRoom(center_x, center_y, randint(1, max_size))
+			room.draw(self)
+			return room
+
+#
+#	MapMaker Useful Abstraction Classes
+#
+class MapMakerRoom():
+	def __init__(self, x, y, w, h):
+		self.x, self.y, self.w, self.h = x, y, w, h
+
+	def draw(self, mapMaker):
+		x, y, w, h = self.x, self.y, self.w, self.h
+		mapMaker.drawMapTileRectangle(Floor(x+1, y+1, w-2, h-2))
+		mapMaker.drawMapTileRectangle(HWall(x, y, w))     #N
+		mapMaker.drawMapTileRectangle(HWall(x, y+h-1, w)) #S
+		mapMaker.drawMapTileRectangle(VWall(x, y, h))	  #W
+		mapMaker.drawMapTileRectangle(VWall(x+w-1, y, h)) #E
+
+class MapMakerCardinalRoom(MapMakerRoom):
+	# Cardinal Size is defined as size 1=3x3, 2=5x5, 3=7x7, etc.
+	# Ex: if you draw a size 1 room at location (3,3), you'll get a floor tile at (3,3) surrounded by walls.
+	# Note that Cardinal Size Rooms always have a true center. This is useful for our random map generation alg.
+	def __init__(self, center_x, center_y, size):
+		MapMakerRoom.__init__(self, center_x - size, center_y - size, (2 * size) + 1, (2 * size) + 1)
+		self.center_x = center_x
+		self.center_y = center_y
+		
+#
+#	MapTileRectangles
+#
+class MapTileRectangle():
+	def __init__(self, x, y, w, h, tileType, tileTypeInteractions=None):
+		self.x, self.y, self.w, self.h = x, y, w, h
+		self.tileType, self.tileTypeInteractions = tileType, tileTypeInteractions
+
+class Floor(MapTileRectangle):
+	def __init__(self, x, y, w, h): 
+		MapTileRectangle.__init__(self, x, y, w, h, MapTile.T_FLOOR)
+
+class VWall(MapTileRectangle):
+	def __init__(self, x, y, h): 
+		MapTileRectangle.__init__(self, x, y, 1, h, 
+								  MapTile.T_VWALL, {MapTile.T_HWALL: MapTile.T_XWALL,
+													MapTile.T_HALL:  MapTile.T_DOOR,
+													MapTile.T_XWALL: MapTile.T_XWALL,
+													MapTile.T_FLOOR: MapTile.T_FLOOR})
+
+class HWall(MapTileRectangle):
+	def __init__(self, x, y, w): 
+		MapTileRectangle.__init__(self, x, y, w, 1, 
+								  MapTile.T_HWALL, {MapTile.T_VWALL: MapTile.T_XWALL,
+													MapTile.T_HALL:  MapTile.T_DOOR,
+													MapTile.T_XWALL: MapTile.T_XWALL,
+													MapTile.T_FLOOR: MapTile.T_FLOOR})
+
+class VHall(MapTileRectangle):
+	def __init__(self, x, y, h): 
+		MapTileRectangle.__init__(self, x, y, 1, h, 
+								  MapTile.T_HALL, {MapTile.T_HWALL: MapTile.T_DOOR})
+
+class HHall(MapTileRectangle):
+	def __init__(self, x, y, w): 
+		MapTileRectangle.__init__(self, x, y, w, 1, 
+								  MapTile.T_HALL, {MapTile.T_VWALL: MapTile.T_DOOR})
+
+#
+#	MapTileGenerator
+#
+class MapTileGenerator:
+	def createTile(self, type):
+		tile = None
+		if type == MapTile.T_NONE: 	  tile = MapTile(MapTile.T_NONE,  {'walkable': 0, 'opacity': 1})
+		elif type == MapTile.T_FLOOR: tile = MapTile(MapTile.T_FLOOR, {'walkable': 1, 'opacity': 0})
+		elif type == MapTile.T_HWALL: tile = MapTile(MapTile.T_HWALL, {'walkable': 0, 'opacity': 1})
+		elif type == MapTile.T_VWALL: tile = MapTile(MapTile.T_VWALL, {'walkable': 0, 'opacity': 1})
+		elif type == MapTile.T_XWALL: tile = MapTile(MapTile.T_XWALL, {'walkable': 0, 'opacity': 1})
+		elif type == MapTile.T_HALL:  tile = MapTile(MapTile.T_HALL,  {'walkable': 1, 'opacity': 0})
+		elif type == MapTile.T_DOOR:  tile = MapTile(MapTile.T_DOOR,  {'walkable': 1, 'opacity': 0, 'open': 1})
+		return tile

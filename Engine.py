@@ -2,15 +2,16 @@ from random import randint
 
 class Engine:
 	def __init__(self):
-		from MapMakers import RandomMapMaker
+		from MapMakers import RandomMapMaker, TestMapMaker
 
-		#create random map
-		randomMapMaker = RandomMapMaker(20, 20)
-		randomMapMaker.generateRandomMap()
-		map = randomMapMaker.getMap()
+		#create map
+		#mapMaker = TestMapMaker()
+		mapMaker = RandomMapMaker()
+		
+		map = mapMaker.getMap()
 
 		#create new player
-		getPlayerStartCoords = randomMapMaker.getPlayerStartCoords()
+		getPlayerStartCoords = mapMaker.getPlayerStartCoords()
 		player = Player(getPlayerStartCoords[0], getPlayerStartCoords[1])
 		
 		#create game
@@ -61,15 +62,33 @@ class Engine:
 
 	def getGame(self): return self.game
 
+class MapTile:
+	T_NONE 	= 'none'
+	T_FLOOR = 'floor'
+	T_HWALL = 'hwall'
+	T_VWALL = 'vwall'
+	T_XWALL = 'xwall'
+	T_DOOR 	= 'door'
+	T_HALL  = 'hall'
+
+	def __init__(self, type, props):
+		self.type = type
+		self.props = props
+
+	def getType(self): return self.type
+	def getProp(self, k): return self.props[k]
+
 class Map:
 	def __init__(self, w, h):
 		self.w = w
 		self.h = h
 		self.tiles = []
-		mapTileGenerator = MapTileGenerator()
-		for i in range(w * h): self.tiles.append(mapTileGenerator.createTile(MapTile.T_NONE))
+		for i in range(w * h): self.tiles.append(None)
 		
-	def setTile(self, x, y, tile): self.tiles[(y * self.w) + x] = tile
+	def setTile(self, x, y, tile): 
+		if x >= 0 and y >= 0 and x < self.w and y < self.h:
+			self.tiles[(y * self.w) + x] = tile
+	
 	def getTile(self, x, y): 
 		if x >= 0 and y >= 0 and x < self.w and y < self.h:
 			return self.tiles[(y * self.w) + x]
@@ -79,32 +98,6 @@ class Map:
 	def getW(self): return self.w
 	def getH(self): return self.h
 
-class MapTile:
-	T_NONE 	= 'none'
-	T_FLOOR = 'floor'
-	T_HWALL = 'hwall'
-	T_VWALL = 'vwall'
-	T_XWALL = 'xwall'
-	T_DOOR 	= 'door'
-
-	def __init__(self, type, props):
-		self.type = type
-		self.props = props
-
-	def getType(self): return self.type
-	def getProp(self, k): return self.props[k]
-
-class MapTileGenerator:
-	def createTile(self, type):
-		tile = None
-		if type == MapTile.T_NONE: 	  tile = MapTile(MapTile.T_NONE,  {'walkable': 0, 'opacity': 1})
-		elif type == MapTile.T_FLOOR: tile = MapTile(MapTile.T_FLOOR, {'walkable': 1, 'opacity': 0})
-		elif type == MapTile.T_HWALL: tile = MapTile(MapTile.T_HWALL, {'walkable': 0, 'opacity': 1})
-		elif type == MapTile.T_VWALL: tile = MapTile(MapTile.T_VWALL, {'walkable': 0, 'opacity': 1})
-		elif type == MapTile.T_XWALL: tile = MapTile(MapTile.T_XWALL, {'walkable': 0, 'opacity': 1})
-		elif type == MapTile.T_DOOR:  tile = MapTile(MapTile.T_DOOR,  {'walkable': 1, 'opacity': 0, 'open': 1})
-		return tile
-		
 class Player:
 	def __init__(self, x, y):
 		self.x = x
