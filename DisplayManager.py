@@ -4,16 +4,16 @@ from datetime import date
 
 class DisplayManager:
 	def __init__(self):
+		self.C_WIDTH = 96
 		self.C_HEIGHT = 64
-		self.C_WIDTH = 32
 		self.C_TITLE = 'New Game ' + date.today().strftime('%A %d-%B-%Y')
 		self.console = Console(self.C_WIDTH, self.C_HEIGHT, self.C_TITLE)
 		self.consoleItemGenerator = ConsoleItemGenerator()
 
 		self.statusOffset = (1, 1)		
 		self.mapOffset = (3, 3)
-		self.M_HORZ_DRAW_DISTANCE = 6
-		self.M_VERT_DRAW_DISTANCE = 4
+		self.M_HORZ_DRAW_DISTANCE = 45
+		self.M_VERT_DRAW_DISTANCE = 29
 		
 	def _mapTileToConsoleItem(self, mapTile):
 		return self.consoleItemGenerator.createConsoleItem(mapTile)
@@ -68,10 +68,10 @@ class ConsoleItemGenerator:
 		if mapTile != None:
 			type = mapTile.getType()
 			if type == MapTile.T_FLOOR:   consoleItem = ConsoleItem('.', white)
-			elif type == MapTile.T_HWALL: consoleItem = ConsoleItem('-', Color(188, 188, 188))
-			elif type == MapTile.T_VWALL: consoleItem = ConsoleItem('|', Color(188, 188, 188))
-			elif type == MapTile.T_XWALL: consoleItem = ConsoleItem('+', Color(188, 188, 188))
-			elif type == MapTile.T_NONE:  consoleItem = ConsoleItem('#', blue)
+			elif type == MapTile.T_HWALL: consoleItem = ConsoleItem('#', Color(188, 188, 188)) # -
+			elif type == MapTile.T_VWALL: consoleItem = ConsoleItem('#', Color(188, 188, 188)) # |
+			elif type == MapTile.T_XWALL: consoleItem = ConsoleItem('#', Color(148, 148, 148)) # +
+			elif type == MapTile.T_NONE:  consoleItem = ConsoleItem('~', Color(0, 0, 127))
 			elif type == MapTile.T_DOOR:  
 				if mapTile.getProp('open') == 1:   consoleItem = ConsoleItem('o', Color(188, 188, 188))
 				elif mapTile.getProp('open') == 0: consoleItem = ConsoleItem('x', Color(188, 188, 188))
