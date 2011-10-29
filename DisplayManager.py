@@ -28,6 +28,8 @@ class DisplayManager:
 	def draw(self, game):
 		player = game.getPlayer()
 		map = game.getMap()
+		
+		self.console.clear()
 
 		#draw status
 		self.console.putConsoleString(self.statusOffset[0], self.statusOffset[1], self._statusToConsoleItem(player))
@@ -102,3 +104,6 @@ class Console:
 		
 	def flush(self):
 		console_flush()
+		
+	def clear(self):
+		console_clear(self.c)
