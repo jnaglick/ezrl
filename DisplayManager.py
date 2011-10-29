@@ -1,5 +1,5 @@
 from libtcodpy import *
-from Engine import MapTile
+from Engine import MapTileType
 from datetime import date
 
 class DisplayManager:
@@ -72,13 +72,13 @@ class MapTileToConsoleItem:
 		consoleItem = None
 		if mapTile != None:
 			type = mapTile.getType()
-			if type == MapTile.T_FLOOR:   consoleItem = ConsoleItem('.', white)
-			elif type == MapTile.T_HWALL: consoleItem = ConsoleItem('#', Color(188, 188, 188)) # -
-			elif type == MapTile.T_VWALL: consoleItem = ConsoleItem('#', Color(188, 188, 188)) # |
-			elif type == MapTile.T_XWALL: consoleItem = ConsoleItem('#', Color(148, 148, 148)) # +
-			elif type == MapTile.T_HALL:  consoleItem = ConsoleItem('*', Color(188, 188, 188))
-			elif type == MapTile.T_NONE:  consoleItem = ConsoleItem('~', Color(0, 0, 127))
-			elif type == MapTile.T_DOOR:  
+			if type == MapTileType.T_FLOOR:   consoleItem = ConsoleItem('.', white)
+			elif type == MapTileType.T_HWALL: consoleItem = ConsoleItem('#', Color(188, 188, 188)) # -
+			elif type == MapTileType.T_VWALL: consoleItem = ConsoleItem('#', Color(188, 188, 188)) # |
+			elif type == MapTileType.T_XWALL: consoleItem = ConsoleItem('#', Color(148, 148, 148)) # +
+			elif type == MapTileType.T_HALL:  consoleItem = ConsoleItem('*', Color(188, 188, 188))
+			elif type == MapTileType.T_NONE:  consoleItem = ConsoleItem('~', Color(0, 0, 127))
+			elif type == MapTileType.T_DOOR:  
 				if mapTile.getProp('open') == 1:   consoleItem = ConsoleItem('o', Color(188, 188, 188))
 				elif mapTile.getProp('open') == 0: consoleItem = ConsoleItem('x', Color(188, 188, 188))
 		return consoleItem

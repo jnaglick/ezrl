@@ -96,7 +96,7 @@ class Engine:
 
 	def getGame(self): return self.game
 
-class MapTile:
+class MapTileType:
 	T_NONE 	= 'none'
 	T_FLOOR = 'floor'
 	T_HWALL = 'hwall'
@@ -104,7 +104,8 @@ class MapTile:
 	T_XWALL = 'xwall'
 	T_DOOR 	= 'door'
 	T_HALL  = 'hall'
-
+	
+class MapTile:
 	def __init__(self, type, props):
 		self.type = type
 		self.props = props

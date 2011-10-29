@@ -1,10 +1,10 @@
-from Engine import Map, MapTile
+from Engine import Map, MapTile, MapTileType
 from random import randint, choice
 
 class MapMaker:
 	def __init__(self, w, h):
 		self.map = Map(w, h)
-		self.mapTileGenerator = MapTileGenerator()
+		self.mapTileTypeToMapTile = MapTileTypeToMapTile()
 		self.makeMap()
 		
 	def getMap(self): return self.map
@@ -21,7 +21,7 @@ class MapMaker:
 					if targetTile != None:
 						try: tileTypeToSet = rect.tileTypeInteractions[targetTile.getType()]
 						except KeyError: None
-				self.map.setTile(rect.x + w, rect.y + h, self.mapTileGenerator.createTile(tileTypeToSet))
+				self.map.setTile(rect.x + w, rect.y + h, self.mapTileTypeToMapTile.get(tileTypeToSet))
 
 class TestMapMaker(MapMaker):
 	def __init__(self):
@@ -31,7 +31,7 @@ class TestMapMaker(MapMaker):
 
 	def makeMap(self):
 		#Create "None" tiles
-		self.drawMapTileRectangle(MapTileRectangle(0, 0, self.map.getW(), self.map.getH(), MapTile.T_NONE))
+		self.drawMapTileRectangle(MapTileRectangle(0, 0, self.map.getW(), self.map.getH(), MapTileType.T_NONE))
 		
 		self._drawCardinalSizeRoomAtCenter(4, 4, 1)
 		
@@ -59,7 +59,7 @@ class RandomMapMaker(MapMaker):
 		def flip(bit): return (bit + 1) % 2
 
 		#Create "None" tiles
-		self.drawMapTileRectangle(MapTileRectangle(0, 0, self.map.getW(), self.map.getH(), MapTile.T_NONE))
+		self.drawMapTileRectangle(MapTileRectangle(0, 0, self.map.getW(), self.map.getH(), MapTileType.T_NONE))
 
 		#Get center of map, set player start coord there
 		map_center_x, map_center_y = (self.map.getW()-1)/2, (self.map.getH()-1)/2
@@ -178,45 +178,45 @@ class MapTileRectangle():
 
 class Floor(MapTileRectangle):
 	def __init__(self, x, y, w, h): 
-		MapTileRectangle.__init__(self, x, y, w, h, MapTile.T_FLOOR)
+		MapTileRectangle.__init__(self, x, y, w, h, MapTileType.T_FLOOR)
 
 class VWall(MapTileRectangle):
 	def __init__(self, x, y, h): 
 		MapTileRectangle.__init__(self, x, y, 1, h, 
-								  MapTile.T_VWALL, {MapTile.T_HWALL: MapTile.T_XWALL,
-													MapTile.T_HALL:  MapTile.T_DOOR,
-													MapTile.T_XWALL: MapTile.T_XWALL,
-													MapTile.T_FLOOR: MapTile.T_FLOOR})
+								  MapTileType.T_VWALL, {MapTileType.T_HWALL: MapTileType.T_XWALL,
+													MapTileType.T_HALL:  MapTileType.T_DOOR,
+													MapTileType.T_XWALL: MapTileType.T_XWALL,
+													MapTileType.T_FLOOR: MapTileType.T_FLOOR})
 
 class HWall(MapTileRectangle):
 	def __init__(self, x, y, w): 
 		MapTileRectangle.__init__(self, x, y, w, 1, 
-								  MapTile.T_HWALL, {MapTile.T_VWALL: MapTile.T_XWALL,
-													MapTile.T_HALL:  MapTile.T_DOOR,
-													MapTile.T_XWALL: MapTile.T_XWALL,
-													MapTile.T_FLOOR: MapTile.T_FLOOR})
+								  MapTileType.T_HWALL, {MapTileType.T_VWALL: MapTileType.T_XWALL,
+													MapTileType.T_HALL:  MapTileType.T_DOOR,
+													MapTileType.T_XWALL: MapTileType.T_XWALL,
+													MapTileType.T_FLOOR: MapTileType.T_FLOOR})
 
 class VHall(MapTileRectangle):
 	def __init__(self, x, y, h): 
 		MapTileRectangle.__init__(self, x, y, 1, h, 
-								  MapTile.T_HALL, {MapTile.T_HWALL: MapTile.T_DOOR})
+								  MapTileType.T_HALL, {MapTileType.T_HWALL: MapTileType.T_DOOR})
 
 class HHall(MapTileRectangle):
 	def __init__(self, x, y, w): 
 		MapTileRectangle.__init__(self, x, y, w, 1, 
-								  MapTile.T_HALL, {MapTile.T_VWALL: MapTile.T_DOOR})
+								  MapTileType.T_HALL, {MapTileType.T_VWALL: MapTileType.T_DOOR})
 
 #
 #	MapTileGenerator
 #
-class MapTileGenerator:
-	def createTile(self, type):
+class MapTileTypeToMapTile:
+	def get(self, type):
 		tile = None
-		if type == MapTile.T_NONE: 	  tile = MapTile(MapTile.T_NONE,  {'walkable': 0, 'opacity': 1})
-		elif type == MapTile.T_FLOOR: tile = MapTile(MapTile.T_FLOOR, {'walkable': 1, 'opacity': 0})
-		elif type == MapTile.T_HWALL: tile = MapTile(MapTile.T_HWALL, {'walkable': 0, 'opacity': 1})
-		elif type == MapTile.T_VWALL: tile = MapTile(MapTile.T_VWALL, {'walkable': 0, 'opacity': 1})
-		elif type == MapTile.T_XWALL: tile = MapTile(MapTile.T_XWALL, {'walkable': 0, 'opacity': 1})
-		elif type == MapTile.T_HALL:  tile = MapTile(MapTile.T_HALL,  {'walkable': 1, 'opacity': 0})
-		elif type == MapTile.T_DOOR:  tile = MapTile(MapTile.T_DOOR,  {'walkable': 1, 'opacity': 0, 'open': 1})
+		if type == MapTileType.T_NONE: 	  tile = MapTile(MapTileType.T_NONE,  {'walkable': 0, 'opacity': 1})
+		elif type == MapTileType.T_FLOOR: tile = MapTile(MapTileType.T_FLOOR, {'walkable': 1, 'opacity': 0})
+		elif type == MapTileType.T_HWALL: tile = MapTile(MapTileType.T_HWALL, {'walkable': 0, 'opacity': 1})
+		elif type == MapTileType.T_VWALL: tile = MapTile(MapTileType.T_VWALL, {'walkable': 0, 'opacity': 1})
+		elif type == MapTileType.T_XWALL: tile = MapTile(MapTileType.T_XWALL, {'walkable': 0, 'opacity': 1})
+		elif type == MapTileType.T_HALL:  tile = MapTile(MapTileType.T_HALL,  {'walkable': 1, 'opacity': 0})
+		elif type == MapTileType.T_DOOR:  tile = MapTile(MapTileType.T_DOOR,  {'walkable': 1, 'opacity': 0, 'open': 1})
 		return tile
