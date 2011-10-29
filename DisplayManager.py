@@ -47,8 +47,6 @@ class DisplayManager:
 				consoleItem = self._mapTileToConsoleItem(map.getTile(x, y))
 				if consoleItem != None:
 					self.console.putConsoleChar(self.mapOffset[0] + j, self.mapOffset[1] + i, consoleItem)
-				else:
-					self.console.clearConsoleChar(self.mapOffset[0] + j, self.mapOffset[1] + i)
 				j += 1
 			i += 1
 
@@ -88,11 +86,6 @@ class ConsoleItemGenerator:
 class Console:
 	def __init__(self, consoleWidth, consoleHeight, consoleTitle):
 		self.c = console_init_root(consoleWidth, consoleHeight, consoleTitle, False)
-		
-	def clearConsoleChar(self, x, y):
-		console_set_char(self.c, x, y, None)
-		console_set_fore(self.c, x, y, None)
-		console_set_back(self.c, x, y, None)
 		
 	def putConsoleChar(self, x, y, ConsoleItem):
 		console_set_char(self.c, x, y, ConsoleItem.getI())
