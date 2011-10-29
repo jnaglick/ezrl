@@ -4,14 +4,15 @@ from datetime import date
 
 class DisplayManager:
 	def __init__(self):
-		self.C_WIDTH = 96
+		self.C_WIDTH = 97
 		self.C_HEIGHT = 64
 		self.C_TITLE = 'New Game ' + date.today().strftime('%A %d-%B-%Y')
 		self.console = Console(self.C_WIDTH, self.C_HEIGHT, self.C_TITLE)
 		self.consoleItemGenerator = ConsoleItemGenerator()
 
-		self.statusOffset = (1, 1)		
-		self.mapOffset = (3, 3)
+		self.infoOffset = (3, 1)
+		self.statusOffset = (3, 2)
+		self.mapOffset = (3, 4)
 		self.M_HORZ_DRAW_DISTANCE = 45
 		self.M_VERT_DRAW_DISTANCE = 29
 		
@@ -21,9 +22,12 @@ class DisplayManager:
 	def _playerToConsoleItem(self, player):
 		return ConsoleItem('@', white)
 
-	def _statusToConsoleItem(self, player):
-		s = 'X:[' + str(player.getX()) + ']Y:[' + str(player.getY()) + ']Steps:[' + str(player.getSteps()) + ']'
+	def _infoToConsoleItem(self, player):
+		s = 'X:[' + str(player.getX()) + '] Y:[' + str(player.getY()) + '] Steps:[' + str(player.getSteps()) + ']'
 		return ConsoleItem(s, Color(128, 128, 128))
+		
+	def _statusToConsoleItem(self, player):
+		return ConsoleItem(player.getStatus(), Color(128, 128, 128))
 		
 	def draw(self, game):
 		player = game.getPlayer()
@@ -31,9 +35,10 @@ class DisplayManager:
 		
 		self.console.clear()
 
-		#draw status
+		#draw info and status
+		self.console.putConsoleString(self.infoOffset[0], self.infoOffset[1], self._infoToConsoleItem(player))
 		self.console.putConsoleString(self.statusOffset[0], self.statusOffset[1], self._statusToConsoleItem(player))
-		
+
 		#draw map
 		i = 0
 		for y in range(player.getY()-self.M_VERT_DRAW_DISTANCE, player.getY()+self.M_VERT_DRAW_DISTANCE+1):

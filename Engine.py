@@ -36,35 +36,47 @@ class Engine:
 
 	def _verifyEntityCommand(self, entity, verb, adj):
 		if verb == 'move': return self._vEntityMove(entity, adj)
-		return 0
+		return False
 		
 	def _cEntityMove(self, entity, adj):
 		if adj == 'u': 
 			entity.decY()
+			d = 'up'
 		elif adj == 'd': 
 			entity.incY()
+			d = 'down'
 		elif adj == 'l': 
 			entity.decX()
+			d = 'left'
 		elif adj == 'r': 
 			entity.incX()
+			d = 'right'
 		elif adj == 'ul': 
 			entity.decY()
 			entity.decX()
+			d = 'up and to the left'
 		elif adj == 'ur': 
 			entity.decY()
 			entity.incX()
+			d = 'up and to the right'
 		elif adj == 'dl': 
 			entity.incY()
 			entity.decX()
+			d = 'down and to the left'
 		elif adj == 'dr': 
 			entity.incY()
 			entity.incX()
+			d = 'down and to the right'
 		
 		for i in range(len(adj)):
 			entity.incSteps()
+			
+		entity.setStatus('You walk ' + d + '.')
 
 	def _processEntityCommand(self, entity, verb, adj):
-		if (not self._verifyEntityCommand(entity, verb, adj)): return
+		if (not self._verifyEntityCommand(entity, verb, adj)): 
+			entity.setStatus('You can\' do that.')
+			return
 		if verb == 'move': self._cEntityMove(entity, adj)
 		
 	def _processSysCommand(self, verb):
@@ -125,6 +137,7 @@ class Player:
 		self.x = x
 		self.y = y
 		self.steps = 0
+		self.status = ''
 		
 	def getY(self): return self.y
 	def setY(self, y): self.y = y	
@@ -138,6 +151,9 @@ class Player:
 
 	def getSteps(self): return self.steps
 	def incSteps(self): self.steps += 1
+	
+	def getStatus(self): return self.status
+	def setStatus(self, status): self.status = status
 
 class Game:
 	def __init__(self, player, map):
