@@ -7,7 +7,7 @@ class DisplayManager:
 		self.C_HEIGHT = 64
 		self.C_WIDTH = 32
 		self.C_TITLE = 'New Game ' + date.today().strftime('%A %d-%B-%Y')
-		self.console = Console(self.C_HEIGHT, self.C_WIDTH, self.C_TITLE)
+		self.console = Console(self.C_WIDTH, self.C_HEIGHT, self.C_TITLE)
 		self.consoleItemGenerator = ConsoleItemGenerator()
 
 		self.statusOffset = (1, 1)		
