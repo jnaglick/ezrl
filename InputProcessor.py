@@ -4,10 +4,23 @@ class InputProcessor:
 	def __init__(self):
 		self.inputToCommand = {
 			ord('x')	: 'sys exit',
-			KEY_UP		: 'p move up',
-			KEY_DOWN	: 'p move down',
-			KEY_LEFT	: 'p move left',
-			KEY_RIGHT	: 'p move right'
+			
+			KEY_UP		: 'p move u',
+			ord('k')	: 'p move u',
+			
+			KEY_DOWN	: 'p move d',
+			ord('j')	: 'p move d',
+			
+			KEY_LEFT	: 'p move l',
+			ord('h')	: 'p move l',
+			
+			KEY_RIGHT	: 'p move r',
+			ord('l')	: 'p move r',
+			
+			ord('u')	: 'p move ul',
+			ord('i')	: 'p move ur',
+			ord('n')	: 'p move dl',
+			ord('m')	: 'p move dr'
 		}
 		
 	def fetchCommands(self):

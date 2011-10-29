@@ -24,10 +24,14 @@ class Engine:
 	def _vEntityMove(self, entity, adj):
 		x, y = entity.getX(), entity.getY()
 		return {
-			'up' : self._vTileWalkable(x, y - 1),
-			'down' : self._vTileWalkable(x, y + 1),
-			'left' : self._vTileWalkable(x - 1, y),
-			'right' : self._vTileWalkable(x + 1, y)
+			'u' : self._vTileWalkable(x, y - 1),
+			'd' : self._vTileWalkable(x, y + 1),
+			'l' : self._vTileWalkable(x - 1, y),
+			'r' : self._vTileWalkable(x + 1, y),
+			'ul' : self._vTileWalkable(x - 1, y - 1),
+			'ur' : self._vTileWalkable(x + 1, y - 1),
+			'dl' : self._vTileWalkable(x - 1, y + 1),
+			'dr' : self._vTileWalkable(x + 1, y + 1)
 		}[adj]
 
 	def _verifyEntityCommand(self, entity, verb, adj):
@@ -35,11 +39,29 @@ class Engine:
 		return 0
 		
 	def _cEntityMove(self, entity, adj):
-		if adj == 'up': entity.decY()
-		if adj == 'down': entity.incY()
-		if adj == 'left': entity.decX()
-		if adj == 'right': entity.incX()
-		entity.incSteps()
+		if adj == 'u': 
+			entity.decY()
+		elif adj == 'd': 
+			entity.incY()
+		elif adj == 'l': 
+			entity.decX()
+		elif adj == 'r': 
+			entity.incX()
+		elif adj == 'ul': 
+			entity.decY()
+			entity.decX()
+		elif adj == 'ur': 
+			entity.decY()
+			entity.incX()
+		elif adj == 'dl': 
+			entity.incY()
+			entity.decX()
+		elif adj == 'dr': 
+			entity.incY()
+			entity.incX()
+		
+		for i in range(len(adj)):
+			entity.incSteps()
 
 	def _processEntityCommand(self, entity, verb, adj):
 		if (not self._verifyEntityCommand(entity, verb, adj)): return
