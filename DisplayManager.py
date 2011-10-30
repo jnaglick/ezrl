@@ -30,11 +30,11 @@ class DisplayManager:
 			'Y:[' + str(player.getY()) + '] ' + \
 			'Steps:[' + str(player.getSteps()) + ']'
 		c = ConsoleItem(s, Color(128, 128, 128))
-		self.console.putConsoleItem(self.infoOffset[0], self.infoOffset[1], c)
+		self.console.drawConsoleItem(self.infoOffset[0], self.infoOffset[1], c)
 		
 	def _drawPlayerStatusMessages(self, player):
 		c = ConsoleItem(player.getStatusMessages()[-self.PLAYER_STATUS_MESSAGES_TO_DRAW:], Color(128, 128, 128))
-		self.console.putConsoleItem(self.playerStatusMessagesOffset[0], self.playerStatusMessagesOffset[1], c)
+		self.console.drawConsoleItem(self.playerStatusMessagesOffset[0], self.playerStatusMessagesOffset[1], c)
 		
 	def _drawMap(self, map, x_start, x_stop, y_start, y_stop):
 		i = 0
@@ -43,17 +43,15 @@ class DisplayManager:
 			for x in range(x_start, x_stop):
 				c = self.mapTileToConsoleItem.get(map.getTile(x, y))
 				if c != None:
-					self.console.putConsoleItem(self.mapOffset[0] + j, 
-												self.mapOffset[1] + i, 
-												c)
+					self.console.drawConsoleItem(self.mapOffset[0] + j, self.mapOffset[1] + i, c)
 				j += 1
 			i += 1
-		
+
 	def _drawPlayer(self, player):
 		c = ConsoleItem('@', white)
-		self.console.putConsoleItem(self.mapOffset[0] + self.M_HORZ_DRAW_DISTANCE, \
-									self.mapOffset[1] + self.M_VERT_DRAW_DISTANCE, \
-									c)
+		self.console.drawConsoleItem(self.mapOffset[0] + self.M_HORZ_DRAW_DISTANCE, \
+									 self.mapOffset[1] + self.M_VERT_DRAW_DISTANCE, \
+									 c)
 
 	def draw(self, game):
 		self.console.clear()
@@ -101,21 +99,21 @@ class Console:
 	def __init__(self, consoleWidth, consoleHeight, consoleTitle):
 		self.c = console_init_root(consoleWidth, consoleHeight, consoleTitle, False)
 		
-	def putConsoleItem(self, x, y, consoleItem):
+	def drawConsoleItem(self, x, y, consoleItem):
 		if type(consoleItem.getI()) == StringType:
 			if len(consoleItem.getI()) == 1:
-				self._putConsoleChar(x, y, consoleItem)
+				self._drawChar(x, y, consoleItem)
 			elif len(consoleItem.getI()) > 1:
-				self._putConsoleString(x, y, consoleItem)
+				self._drawString(x, y, consoleItem)
 		elif type(consoleItem.getI()) == ListType:
-			self._putConsoleList(x, y, consoleItem)
+			self._drawList(x, y, consoleItem)
 
-	def _putConsoleChar(self, x, y, consoleItem):
+	def _drawChar(self, x, y, consoleItem):
 		console_set_char(self.c, x, y, consoleItem.getI())
 		console_set_fore(self.c, x, y, consoleItem.getColor())
 		if (consoleItem.getBColor() != None): console_set_back(self.c, x, y, consoleItem.getBColor())
 		
-	def _putConsoleString(self, x, y, consoleItem):
+	def _drawString(self, x, y, consoleItem):
 		console_print_left(self.c, x, y, BKGND_NONE, consoleItem.getI())
 		for i in range(0, len(consoleItem.getI())): 
 			console_set_fore(self.c, x+i, y, consoleItem.getColor())
@@ -123,13 +121,13 @@ class Console:
 			for i in range(0, len(consoleItem.getI())): 
 				console_set_back(self.c, x+i, y, consoleItem.getBColor())
 
-	def _putConsoleList(self, x, y, consoleList): # TODO not the most elegant or functional. care later.
+	def _drawList(self, x, y, consoleList): # TODO not the most elegant or functional. care later.
 		i = 0
 		for item in consoleList.getI():
 			if len(item) == 1:
-				self._putConsoleChar(x, y+i, ConsoleItem(item, consoleList.getColor(), consoleList.getBColor()))
+				self._drawChar(x, y+i, ConsoleItem(item, consoleList.getColor(), consoleList.getBColor()))
 			elif len(item) > 1:
-				self._putConsoleString(x, y+i, ConsoleItem(item, consoleList.getColor(), consoleList.getBColor()))
+				self._drawString(x, y+i, ConsoleItem(item, consoleList.getColor(), consoleList.getBColor()))
 			i += 1
 		
 	def flush(self):
