@@ -71,11 +71,11 @@ class Engine:
 		for i in range(len(adj)):
 			entity.incSteps()
 			
-		entity.setStatus('You walk ' + d + '.')
+		entity.addStatusMessage('You walk ' + d + '.')
 
 	def _processEntityCommand(self, entity, verb, adj):
 		if (not self._verifyEntityCommand(entity, verb, adj)): 
-			entity.setStatus('You can\' do that.')
+			entity.addStatusMessage('You can\' do that.')
 			return
 		if verb == 'move': self._cEntityMove(entity, adj)
 		
@@ -138,7 +138,7 @@ class Player:
 		self.x = x
 		self.y = y
 		self.steps = 0
-		self.status = ''
+		self.statusMessages = []
 		
 	def getY(self): return self.y
 	def setY(self, y): self.y = y	
@@ -153,8 +153,8 @@ class Player:
 	def getSteps(self): return self.steps
 	def incSteps(self): self.steps += 1
 	
-	def getStatus(self): return self.status
-	def setStatus(self, status): self.status = status
+	def getStatusMessages(self): return self.statusMessages
+	def addStatusMessage(self, statusMessage): self.statusMessages.append(statusMessage)
 
 class Game:
 	def __init__(self, player, map):
