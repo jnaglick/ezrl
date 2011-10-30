@@ -1,6 +1,6 @@
-from DisplayManager import *
-from Engine import *
-from InputProcessor import *
+from DisplayManager import DisplayManager
+from Engine import Engine
+from InputProcessor import InputProcessor
 
 displayManager = DisplayManager()
 engine = Engine()
