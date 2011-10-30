@@ -75,7 +75,7 @@ class Engine:
 
 	def _processEntityCommand(self, entity, verb, adj):
 		if (not self._verifyEntityCommand(entity, verb, adj)): 
-			entity.addStatusMessage('You can\' do that.')
+			entity.addStatusMessage('You can\'t do that.')
 			return
 		if verb == 'move': self._cEntityMove(entity, adj)
 		
