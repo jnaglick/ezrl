@@ -1,4 +1,4 @@
-from Engine import Map, MapTile, MapTileType
+from Engine import Map, MapTile, MapTileType, MapTileTypeToMapTile
 from random import randint, choice
 
 class MapMaker:
@@ -205,18 +205,3 @@ class HHall(MapTileRectangle):
 	def __init__(self, x, y, w): 
 		MapTileRectangle.__init__(self, x, y, w, 1, 
 								  MapTileType.T_HALL, {MapTileType.T_VWALL: MapTileType.T_DOOR})
-
-#
-#	MapTileGenerator
-#
-class MapTileTypeToMapTile:
-	def get(self, type):
-		tile = None
-		if type == MapTileType.T_NONE: 	  tile = MapTile(MapTileType.T_NONE,  {'walkable': 0, 'opacity': 1})
-		elif type == MapTileType.T_FLOOR: tile = MapTile(MapTileType.T_FLOOR, {'walkable': 1, 'opacity': 0})
-		elif type == MapTileType.T_HWALL: tile = MapTile(MapTileType.T_HWALL, {'walkable': 0, 'opacity': 1})
-		elif type == MapTileType.T_VWALL: tile = MapTile(MapTileType.T_VWALL, {'walkable': 0, 'opacity': 1})
-		elif type == MapTileType.T_XWALL: tile = MapTile(MapTileType.T_XWALL, {'walkable': 0, 'opacity': 1})
-		elif type == MapTileType.T_HALL:  tile = MapTile(MapTileType.T_HALL,  {'walkable': 1, 'opacity': 0})
-		elif type == MapTileType.T_DOOR:  tile = MapTile(MapTileType.T_DOOR,  {'walkable': 1, 'opacity': 0, 'open': 1})
-		return tile

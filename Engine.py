@@ -96,6 +96,18 @@ class Engine:
 
 	def getGame(self): return self.game
 
+class MapTileTypeToMapTile:
+	def get(self, type):
+		tile = None
+		if type == MapTileType.T_NONE: 	  tile = MapTile(MapTileType.T_NONE,  {'walkable': 0, 'opacity': 1})
+		elif type == MapTileType.T_FLOOR: tile = MapTile(MapTileType.T_FLOOR, {'walkable': 1, 'opacity': 0})
+		elif type == MapTileType.T_HWALL: tile = MapTile(MapTileType.T_HWALL, {'walkable': 0, 'opacity': 1})
+		elif type == MapTileType.T_VWALL: tile = MapTile(MapTileType.T_VWALL, {'walkable': 0, 'opacity': 1})
+		elif type == MapTileType.T_XWALL: tile = MapTile(MapTileType.T_XWALL, {'walkable': 0, 'opacity': 1})
+		elif type == MapTileType.T_HALL:  tile = MapTile(MapTileType.T_HALL,  {'walkable': 1, 'opacity': 0})
+		elif type == MapTileType.T_DOOR:  tile = MapTile(MapTileType.T_DOOR,  {'walkable': 1, 'opacity': 0, 'open': 1})
+		return tile
+
 class MapTileType:
 	T_NONE 	= 'none'
 	T_FLOOR = 'floor'
