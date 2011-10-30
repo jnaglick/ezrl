@@ -74,13 +74,13 @@ class MapTileToConsoleItem:
 		consoleItem = None
 		if mapTile != None:
 			type = mapTile.getType()
-			if type == MapTileType.T_FLOOR:   consoleItem = ConsoleItem('.', white)
-			elif type == MapTileType.T_HWALL: consoleItem = ConsoleItem('#', Color(188, 188, 188)) # -
-			elif type == MapTileType.T_VWALL: consoleItem = ConsoleItem('#', Color(188, 188, 188)) # |
-			elif type == MapTileType.T_XWALL: consoleItem = ConsoleItem('#', Color(148, 148, 148)) # +
-			elif type == MapTileType.T_HALL:  consoleItem = ConsoleItem('*', Color(188, 188, 188))
-			elif type == MapTileType.T_NONE:  consoleItem = ConsoleItem('~', Color(0, 0, 127))
-			elif type == MapTileType.T_DOOR:  
+			if type == MapTileType.floor:   consoleItem = ConsoleItem('.', white)
+			elif type == MapTileType.hwall: consoleItem = ConsoleItem('#', Color(188, 188, 188)) # -
+			elif type == MapTileType.vwall: consoleItem = ConsoleItem('#', Color(188, 188, 188)) # |
+			elif type == MapTileType.xwall: consoleItem = ConsoleItem('#', Color(148, 148, 148)) # +
+			elif type == MapTileType.hall:  consoleItem = ConsoleItem('*', Color(188, 188, 188))
+			elif type == MapTileType.none:  consoleItem = ConsoleItem('~', Color(0, 0, 127))
+			elif type == MapTileType.door:  
 				if mapTile.getProp('open') == 1:   consoleItem = ConsoleItem('o', Color(188, 188, 188))
 				elif mapTile.getProp('open') == 0: consoleItem = ConsoleItem('x', Color(188, 188, 188))
 		return consoleItem

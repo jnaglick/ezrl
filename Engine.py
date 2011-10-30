@@ -99,23 +99,23 @@ class Engine:
 class MapTileTypeToMapTile:
 	def get(self, type):
 		tile = None
-		if type == MapTileType.T_NONE: 	  tile = MapTile(MapTileType.T_NONE,  {'walkable': 0, 'opacity': 1})
-		elif type == MapTileType.T_FLOOR: tile = MapTile(MapTileType.T_FLOOR, {'walkable': 1, 'opacity': 0})
-		elif type == MapTileType.T_HWALL: tile = MapTile(MapTileType.T_HWALL, {'walkable': 0, 'opacity': 1})
-		elif type == MapTileType.T_VWALL: tile = MapTile(MapTileType.T_VWALL, {'walkable': 0, 'opacity': 1})
-		elif type == MapTileType.T_XWALL: tile = MapTile(MapTileType.T_XWALL, {'walkable': 0, 'opacity': 1})
-		elif type == MapTileType.T_HALL:  tile = MapTile(MapTileType.T_HALL,  {'walkable': 1, 'opacity': 0})
-		elif type == MapTileType.T_DOOR:  tile = MapTile(MapTileType.T_DOOR,  {'walkable': 1, 'opacity': 0, 'open': 1})
+		if type == MapTileType.none: 	  tile = MapTile(MapTileType.none,  {'walkable': 0, 'opacity': 1})
+		elif type == MapTileType.floor: tile = MapTile(MapTileType.floor, {'walkable': 1, 'opacity': 0})
+		elif type == MapTileType.hwall: tile = MapTile(MapTileType.hwall, {'walkable': 0, 'opacity': 1})
+		elif type == MapTileType.vwall: tile = MapTile(MapTileType.vwall, {'walkable': 0, 'opacity': 1})
+		elif type == MapTileType.xwall: tile = MapTile(MapTileType.xwall, {'walkable': 0, 'opacity': 1})
+		elif type == MapTileType.hall:  tile = MapTile(MapTileType.hall,  {'walkable': 1, 'opacity': 0})
+		elif type == MapTileType.door:  tile = MapTile(MapTileType.door,  {'walkable': 1, 'opacity': 0, 'open': 1})
 		return tile
 
 class MapTileType:
-	T_NONE 	= 'none'
-	T_FLOOR = 'floor'
-	T_HWALL = 'hwall'
-	T_VWALL = 'vwall'
-	T_XWALL = 'xwall'
-	T_DOOR 	= 'door'
-	T_HALL  = 'hall'
+	none 	= 'none'
+	floor 	= 'floor'
+	hwall 	= 'hwall'
+	vwall 	= 'vwall'
+	xwall 	= 'xwall'
+	door 	= 'door'
+	hall  	= 'hall'
 	
 class MapTile:
 	def __init__(self, type, props):

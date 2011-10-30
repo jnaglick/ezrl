@@ -31,7 +31,7 @@ class TestMapMaker(MapMaker):
 
 	def makeMap(self):
 		#Create "None" tiles
-		self.drawMapTileRectangle(MapTileRectangle(0, 0, self.map.getW(), self.map.getH(), MapTileType.T_NONE))
+		self.drawMapTileRectangle(MapTileRectangle(0, 0, self.map.getW(), self.map.getH(), MapTileType.none))
 		
 		self._drawCardinalSizeRoomAtCenter(4, 4, 1)
 		
@@ -59,7 +59,7 @@ class RandomMapMaker(MapMaker):
 		def flip(bit): return (bit + 1) % 2
 
 		#Create "None" tiles
-		self.drawMapTileRectangle(MapTileRectangle(0, 0, self.map.getW(), self.map.getH(), MapTileType.T_NONE))
+		self.drawMapTileRectangle(MapTileRectangle(0, 0, self.map.getW(), self.map.getH(), MapTileType.none))
 
 		#Get center of map, set player start coord there
 		map_center_x, map_center_y = (self.map.getW()-1)/2, (self.map.getH()-1)/2
@@ -178,30 +178,30 @@ class MapTileRectangle():
 
 class Floor(MapTileRectangle):
 	def __init__(self, x, y, w, h): 
-		MapTileRectangle.__init__(self, x, y, w, h, MapTileType.T_FLOOR)
+		MapTileRectangle.__init__(self, x, y, w, h, MapTileType.floor)
 
 class VWall(MapTileRectangle):
 	def __init__(self, x, y, h): 
 		MapTileRectangle.__init__(self, x, y, 1, h, 
-								  MapTileType.T_VWALL, {MapTileType.T_HWALL: MapTileType.T_XWALL,
-													MapTileType.T_HALL:  MapTileType.T_DOOR,
-													MapTileType.T_XWALL: MapTileType.T_XWALL,
-													MapTileType.T_FLOOR: MapTileType.T_FLOOR})
+								  MapTileType.vwall, {MapTileType.hwall: MapTileType.xwall,
+													MapTileType.hall:  MapTileType.door,
+													MapTileType.xwall: MapTileType.xwall,
+													MapTileType.floor: MapTileType.floor})
 
 class HWall(MapTileRectangle):
 	def __init__(self, x, y, w): 
 		MapTileRectangle.__init__(self, x, y, w, 1, 
-								  MapTileType.T_HWALL, {MapTileType.T_VWALL: MapTileType.T_XWALL,
-													MapTileType.T_HALL:  MapTileType.T_DOOR,
-													MapTileType.T_XWALL: MapTileType.T_XWALL,
-													MapTileType.T_FLOOR: MapTileType.T_FLOOR})
+								  MapTileType.hwall, {MapTileType.vwall: MapTileType.xwall,
+													MapTileType.hall:  MapTileType.door,
+													MapTileType.xwall: MapTileType.xwall,
+													MapTileType.floor: MapTileType.floor})
 
 class VHall(MapTileRectangle):
 	def __init__(self, x, y, h): 
 		MapTileRectangle.__init__(self, x, y, 1, h, 
-								  MapTileType.T_HALL, {MapTileType.T_HWALL: MapTileType.T_DOOR})
+								  MapTileType.hall, {MapTileType.hwall: MapTileType.door})
 
 class HHall(MapTileRectangle):
 	def __init__(self, x, y, w): 
 		MapTileRectangle.__init__(self, x, y, w, 1, 
-								  MapTileType.T_HALL, {MapTileType.T_VWALL: MapTileType.T_DOOR})
+								  MapTileType.hall, {MapTileType.vwall: MapTileType.door})
