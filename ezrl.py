@@ -7,5 +7,5 @@ engine = Engine()
 inputProcessor = InputProcessor()
 
 while(True):
-	displayManager.draw(engine.getGame())
-	engine.processCommands(inputProcessor.fetchCommands())
+    displayManager.draw(engine.getGame())
+    engine.processCommands(inputProcessor.fetchCommands())
