@@ -1,16 +1,19 @@
-from Engine import Map, MapTile, MapTileType, MapTileTypeToMapTile
+from Engine import Map, MapTile, MapTileType, MapTileTypeToMapTile, Item, ItemType, ItemTypeToItem
 from random import randint, choice
 
 class MapMaker:
 	def __init__(self, w, h):
 		self.map = Map(w, h)
 		self.mapTileTypeToMapTile = MapTileTypeToMapTile()
+		self.itemTypeToItem = ItemTypeToItem()
 		self.makeMap()
+		self.makeItems()
 		
 	def getMap(self): return self.map
 	
 	def getPlayerStartCoords(self): raise NotImplementedError
 	def makeMap(self): raise NotImplementedError
+	def makeItems(self): raise NotImplementedError
 	
 	def drawMapTileRectangle(self, rect):
 		for w in range(0, rect.w):
@@ -33,14 +36,20 @@ class TestMapMaker(MapMaker):
 		#Create "None" tiles
 		self.drawMapTileRectangle(MapTileRectangle(0, 0, self.map.getW(), self.map.getH(), MapTileType.none))
 		
-		self._drawCardinalSizeRoomAtCenter(4, 4, 1)
+		self._drawCardinalSizeRoomAtCenter(4, 4, 2)
 		
 		self.playerStartCoords = (4, 4)
 		
+	def makeItems(self):
+		tileInv = self.map.getTile(3, 3).getInventory()
+		tileInv.addItem(self.itemTypeToItem.get(ItemType.apple))
+		tileInv.addItem(self.itemTypeToItem.get(ItemType.banana))
+		tileInv.addItem(self.itemTypeToItem.get(ItemType.pear))
+
 	def _drawCardinalSizeRoomAtCenter(self, center_x, center_y, size):
 		room = MapMakerRoom(center_x - size, center_y - size, (2 * size) + 1, (2 * size) + 1)
 		room.draw(self)
-		return room		
+		return room
 
 class RandomMapMaker(MapMaker):
 	def __init__(self):
@@ -54,6 +63,19 @@ class RandomMapMaker(MapMaker):
 		MapMaker.__init__(self, 199, 199) #These don't have to be odd, but it helps
 
 	def getPlayerStartCoords(self): return self.playerStartCoords
+
+	def makeItems(self):
+		def randFruitType(): return [ItemType.apple, ItemType.banana, ItemType.pear][randint(0, 2)]
+		
+		numFruitToPlace = randint(10, 20)
+		placedFruit = 0
+		while placedFruit < numFruitToPlace:
+			x = randint(1, self.map.getW()-2)
+			y = randint(1, self.map.getH()-2)
+			if self.map.getTile(x, y).getType() == MapTileType.floor:
+				tileInv = self.map.getTile(x, y).getInventory()
+				tileInv.addItem(self.itemTypeToItem.get(randFruitType()))
+				placedFruit += 1
 
 	def makeMap(self):
 		def flip(bit): return (bit + 1) % 2

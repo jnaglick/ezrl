@@ -20,9 +20,12 @@ class InputProcessor:
 			ord('u')	: 'p move ul',
 			ord('i')	: 'p move ur',
 			ord('n')	: 'p move dl',
-			ord('m')	: 'p move dr'
+			ord('m')	: 'p move dr',
+
+			ord(',')	: 'p pickup',
+			ord('p')	: 'p pickup'
 		}
-		
+
 	def fetchCommands(self):
 		actions = []
 
