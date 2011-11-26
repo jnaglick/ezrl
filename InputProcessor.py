@@ -33,7 +33,7 @@ class KeyboardInputProcessor:
         self.inputToCommand = {
             ord('x')    : 'sys exit',
 
-            KEY_UP        : 'p move u',
+            KEY_UP      : 'p move u',
             ord('k')    : 'p move u',
 
             KEY_DOWN    : 'p move d',
@@ -42,7 +42,7 @@ class KeyboardInputProcessor:
             KEY_LEFT    : 'p move l',
             ord('h')    : 'p move l',
 
-            KEY_RIGHT    : 'p move r',
+            KEY_RIGHT   : 'p move r',
             ord('l')    : 'p move r',
 
             ord('u')    : 'p move ul',

@@ -1,5 +1,7 @@
 from libtcodpy import *
+
 from Engine import MapTileType, ItemType
+
 from datetime import date
 from types import StringType, ListType
 
@@ -99,12 +101,12 @@ class MapTileToConsoleItem:
 
         if mapTile.getInventory().getSize() > 0:
             type = mapTile.getInventory().getFirstItem().getType()
-            if type == ItemType.apple:        consoleItem = ConsoleItem('%', green)
-            elif type == ItemType.banana:    consoleItem = ConsoleItem('(', yellow)
-            elif type == ItemType.pear:        consoleItem = ConsoleItem('%', orange)
+            if type == ItemType.apple:      consoleItem = ConsoleItem('%', green)
+            elif type == ItemType.banana:   consoleItem = ConsoleItem('(', yellow)
+            elif type == ItemType.pear:     consoleItem = ConsoleItem('%', orange)
         else:
             type = mapTile.getType()
-            if type == MapTileType.floor:    consoleItem = ConsoleItem('.', white)
+            if type == MapTileType.floor:   consoleItem = ConsoleItem('.', white)
             elif type == MapTileType.hwall: consoleItem = ConsoleItem('#', Color(188, 188, 188)) # -
             elif type == MapTileType.vwall: consoleItem = ConsoleItem('#', Color(188, 188, 188)) # |
             elif type == MapTileType.xwall: consoleItem = ConsoleItem('#', Color(148, 148, 148)) # +

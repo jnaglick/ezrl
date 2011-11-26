@@ -117,7 +117,7 @@ class Engine:
 class MapTileTypeToMapTile:
     def get(self, type):
         tile = None
-        if type == MapTileType.none:     tile = MapTile(MapTileType.none,  {'walkable': 0, 'opacity': 1})
+        if type   == MapTileType.none:  tile = MapTile(MapTileType.none,  {'walkable': 0, 'opacity': 1})
         elif type == MapTileType.floor: tile = MapTile(MapTileType.floor, {'walkable': 1, 'opacity': 0})
         elif type == MapTileType.hwall: tile = MapTile(MapTileType.hwall, {'walkable': 0, 'opacity': 1})
         elif type == MapTileType.vwall: tile = MapTile(MapTileType.vwall, {'walkable': 0, 'opacity': 1})
@@ -127,13 +127,13 @@ class MapTileTypeToMapTile:
         return tile
 
 class MapTileType:
-    none     = 'none'
-    floor     = 'floor'
-    hwall     = 'hwall'
-    vwall     = 'vwall'
-    xwall     = 'xwall'
-    door     = 'door'
-    hall      = 'hall'
+    none    = 'none'
+    floor   = 'floor'
+    hwall   = 'hwall'
+    vwall   = 'vwall'
+    xwall   = 'xwall'
+    door    = 'door'
+    hall    = 'hall'
 
 class MapTile:
     def __init__(self, type, props):
@@ -170,15 +170,15 @@ class Map:
 class ItemTypeToItem:
     def get(self, type):
         item = None
-        if type == ItemType.apple:         item = Item(ItemType.apple, 'apple', 1)
-        elif type == ItemType.banana:     item = Item(ItemType.banana, 'banana', 1)
+        if type   == ItemType.apple:    item = Item(ItemType.apple, 'apple', 1)
+        elif type == ItemType.banana:   item = Item(ItemType.banana, 'banana', 1)
         elif type == ItemType.pear:     item = Item(ItemType.pear, 'pear', 1)
         return item
 
 class ItemType:
-    apple = 'apple'
-    banana = 'banana'
-    pear = 'pear'
+    apple   = 'apple'
+    banana  = 'banana'
+    pear    = 'pear'
 
 class Item:
     def __init__(self, type, name, weight):

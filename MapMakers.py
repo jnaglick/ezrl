@@ -1,5 +1,6 @@
-from Engine import Map, MapTile, MapTileType, MapTileTypeToMapTile, Item, ItemType, ItemTypeToItem
-from random import randint, choice
+from Engine import Map, MapTileType, MapTileTypeToMapTile, ItemType, ItemTypeToItem
+
+from random import randint
 
 class MapMaker:
     def __init__(self, w, h):
