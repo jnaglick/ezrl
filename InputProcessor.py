@@ -1,6 +1,34 @@
 from libtcodpy import KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, console_wait_for_keypress
 
-class InputProcessor:
+class ConsoleInputProcessor: # InputProcessor that simulates a CLI
+    def __init__(self):
+        self.command = None
+
+    def fetchCommands(self):
+        if self.command == None: self.command = ''
+
+        print '$ %s' % self.command
+
+        key = console_wait_for_keypress(True)
+
+        if key.c != 0: #printable char (??)
+            if key.c == 27: # Esc
+                return ['sys exit']
+            elif key.c == 13: # Enter
+                return self.resolve()
+            elif key.c == 8: # Backspace
+                if len(self.command) > 0: self.command = self.command[:-1]
+            else:
+                self.command += chr(key.c)
+
+        return self.fetchCommands()
+
+    def resolve(self):
+        r = self.command
+        self.command = None
+        return [r]
+
+class KeyboardInputProcessor:
     def __init__(self):
         self.inputToCommand = {
             ord('x')    : 'sys exit',

@@ -1,10 +1,10 @@
 from DisplayManager import DisplayManager
 from Engine import Engine
-from InputProcessor import InputProcessor
+from InputProcessor import KeyboardInputProcessor, ConsoleInputProcessor
 
 displayManager = DisplayManager()
 engine = Engine()
-inputProcessor = InputProcessor()
+inputProcessor = KeyboardInputProcessor()
 
 while(True):
     displayManager.draw(engine.getGame())

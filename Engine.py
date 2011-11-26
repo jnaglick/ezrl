@@ -21,16 +21,18 @@ class Engine:
 
     def _vEntityMove(self, entity, adj):
         x, y = entity.getX(), entity.getY()
-        return {
-            'u' : self._vTileWalkable(x, y - 1),
-            'd' : self._vTileWalkable(x, y + 1),
-            'l' : self._vTileWalkable(x - 1, y),
-            'r' : self._vTileWalkable(x + 1, y),
-            'ul' : self._vTileWalkable(x - 1, y - 1),
-            'ur' : self._vTileWalkable(x + 1, y - 1),
-            'dl' : self._vTileWalkable(x - 1, y + 1),
-            'dr' : self._vTileWalkable(x + 1, y + 1)
-        }[adj]
+        try:
+            return {
+                'u' : self._vTileWalkable(x, y - 1),
+                'd' : self._vTileWalkable(x, y + 1),
+                'l' : self._vTileWalkable(x - 1, y),
+                'r' : self._vTileWalkable(x + 1, y),
+                'ul' : self._vTileWalkable(x - 1, y - 1),
+                'ur' : self._vTileWalkable(x + 1, y - 1),
+                'dl' : self._vTileWalkable(x - 1, y + 1),
+                'dr' : self._vTileWalkable(x + 1, y + 1)
+            }[adj]
+        except KeyError: return False
 
     def _vEntityPickup(self, entity):
         return entity.getInventory().isNotFull()
@@ -95,13 +97,17 @@ class Engine:
         if verb == 'exit': exit()
 
     def processCommands(self, commands):
+        if commands == None: return
+
         for c in commands:
+            noun, verb, adj = None, None, None
             a = c.split()
-            noun, verb = a[0], a[1]
-            if (len(a) == 3):
-                adj = a[2]
-            else:
-                adj = None
+            if len(a) == 1:
+                noun = a
+            elif len(a) == 2:
+                noun, verb = a
+            elif len(a) == 3:
+                noun, verb, adj = a
 
             if noun == 'sys': self._processSysCommand(verb)
             if noun == 'p': self._processEntityCommand(self.game.getPlayer(), verb, adj)
