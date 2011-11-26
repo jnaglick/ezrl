@@ -1,5 +1,7 @@
 from libtcodpy import KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, console_wait_for_keypress
 
+from types import StringType, TupleType
+
 class ConsoleInputProcessor: # InputProcessor that simulates a CLI
     def __init__(self):
         self.command = None
@@ -30,6 +32,12 @@ class ConsoleInputProcessor: # InputProcessor that simulates a CLI
 
 class KeyboardInputProcessor:
     def __init__(self):
+        self.partialCommand = None
+        self.nextPartialCommands = None
+        
+        self.inventoryPartialCommands = {}
+        for i in range(0, 10): self.inventoryPartialCommands[ord(str(i))] = str(i) # ord('0'):'0', ord('1'):'1', etc
+        
         self.inputToCommand = {
             ord('x')    : 'sys exit',
 
@@ -51,7 +59,9 @@ class KeyboardInputProcessor:
             ord('m')    : 'p move dr',
 
             ord(',')    : 'p pickup',
-            ord('p')    : 'p pickup'
+            ord('p')    : 'p pickup',
+
+            ord('e')    : ('sys query Eat What?', 'p eat',  self.inventoryPartialCommands)
         }
 
     def fetchCommands(self):
@@ -62,7 +72,26 @@ class KeyboardInputProcessor:
         if key.c != 0: keycode = key.c #printable char
         else: keycode = key.vk #physical key
 
-        try: actions.append(self.inputToCommand[keycode])
-        except KeyError: None
+        if self.partialCommand != None:
+            actions.append(self.resolvePartialCommand(keycode))
+        else:
+            try:
+                command = self.inputToCommand[keycode]
+                if type(command) == StringType: actions.append(command) # simple command
+                elif type(command) == TupleType: actions.append(self.setupPartialCommand(*command)) # partial command
+            except KeyError: None
 
         return actions
+
+    def setupPartialCommand(self, immediateCommand, partialCommand, nextPartialCommands):
+        self.partialCommand = partialCommand
+        self.nextPartialCommands = nextPartialCommands
+        return immediateCommand
+
+    def resolvePartialCommand(self, keycode):
+        command = None
+        try: command = self.partialCommand + ' ' + self.nextPartialCommands[keycode]
+        except KeyError: command = 'sys query Nevermind.'
+        self.partialCommand = None
+        self.nextPartialCommands = None
+        return command

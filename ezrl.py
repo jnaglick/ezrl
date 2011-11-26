@@ -8,4 +8,4 @@ inputProcessor = KeyboardInputProcessor()
 
 while(True):
     displayManager.draw(engine.getGame())
-    engine.processCommands(inputProcessor.fetchCommands())
+    engine.updateGame(inputProcessor.fetchCommands())

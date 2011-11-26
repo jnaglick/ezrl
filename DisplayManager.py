@@ -14,15 +14,16 @@ class DisplayManager:
 
         #map draw distances: how much of the map to draw around the player
         self.M_HORZ_DRAW_DISTANCE = 38
-        self.M_VERT_DRAW_DISTANCE = 27
+        self.M_VERT_DRAW_DISTANCE = 26
 
         #misc constants
         self.PLAYER_STATUS_MESSAGES_TO_DRAW = 4
 
         #offsets: where to draw stuff
         self.playerInfoOffset = (3, 1)
-        self.playerStatusMessagesOffset = (3, 59)
+        self.playerStatusMessagesOffset = (3, 57)
         self.playerItemListOffset = (81, 3)
+        self.gameQueryOffset = (3, 61)
         self.mapOffset = (3, 3)
 
         self.console = Console(self.C_WIDTH, self.C_HEIGHT, self.C_TITLE)
@@ -55,6 +56,10 @@ class DisplayManager:
         c = ConsoleItem(labels, Color(255, 255, 255))
         self.console.drawConsoleItem(self.playerItemListOffset[0], self.playerItemListOffset[1], c)
 
+    def _drawGameQuery(self, query):
+        c = ConsoleItem(query, Color(128, 128, 128))
+        self.console.drawConsoleItem(self.gameQueryOffset[0], self.gameQueryOffset[1], c)
+
     def _drawMap(self, map, x_start, x_stop, y_start, y_stop):
         i = 0
         for y in range(y_start, y_stop):
@@ -82,6 +87,8 @@ class DisplayManager:
         self._drawPlayerInfo(player)
         self._drawPlayerStatusMessages(player)
         self._drawPlayerInventory(player.getInventory())
+
+        self._drawGameQuery(game.getQuery())
 
         # map
         self._drawMap(game.getMap(),

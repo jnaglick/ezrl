@@ -15,6 +15,8 @@ class Engine:
         #create game
         self.game = Game(player, mapMaker.getMap())
 
+    def getGame(self): return self.game
+
     def _vTileWalkable(self, x, y):
         map = self.game.getMap()
         return x >= 0 and x < map.getW() and y >= 0 and y < map.getH() and map.getTile(x, y).getProp('walkable')
@@ -37,9 +39,14 @@ class Engine:
     def _vEntityPickup(self, entity):
         return entity.getInventory().isNotFull()
 
+    def _vEntityEat(self, entity, adj):
+        item = entity.getInventory().getItem(int(adj))
+        return item != None and item.getProp('edible') == 1
+
     def _verifyEntityCommand(self, entity, verb, adj):
         if verb == 'move': return self._vEntityMove(entity, adj)
         elif verb == 'pickup': return self._vEntityPickup(entity)
+        elif verb == 'eat': return self._vEntityEat(entity, adj)
         else: return False
 
     def _cEntityMove(self, entity, adj):
@@ -86,33 +93,48 @@ class Engine:
         else:
             entity.addStatusMessage('There\'s nothing to pickup.')
 
+    def _cEntityEat(self, entity, adj):
+        food = entity.getInventory().takeItem(int(adj))
+        entity.addStatusMessage('You eat the ' + food.getName() + '. It tasted great, really, seriously.')
+
     def _processEntityCommand(self, entity, verb, adj):
         if (not self._verifyEntityCommand(entity, verb, adj)):
             entity.addStatusMessage('You can\'t do that.')
             return
         if verb == 'move': self._cEntityMove(entity, adj)
         elif verb == 'pickup': self._cEntityPickup(entity, adj)
+        elif verb == 'eat': self._cEntityEat(entity, adj)
 
-    def _processSysCommand(self, verb):
+    def _processSysCommand(self, verb, adj):
         if verb == 'exit': exit()
+        if verb == 'query': self.game.setQuery(adj)
 
     def processCommands(self, commands):
         if commands == None: return
 
         for c in commands:
-            noun, verb, adj = None, None, None
-            a = c.split()
-            if len(a) == 1:
-                noun = a
-            elif len(a) == 2:
-                noun, verb = a
-            elif len(a) == 3:
-                noun, verb, adj = a
+            print 'command: %s' % c
 
-            if noun == 'sys': self._processSysCommand(verb)
+            noun, verb, adj = None, None, None
+
+            a = c.split()
+            if len(a) >= 1: noun = a[0]
+            if len(a) >= 2: verb = a[1]
+            if len(a) >= 3: adj = c[(len(noun) + len(verb) + 2):]
+
+            if noun == 'sys': self._processSysCommand(verb, adj)
             if noun == 'p': self._processEntityCommand(self.game.getPlayer(), verb, adj)
 
-    def getGame(self): return self.game
+    def generateEngineCommands(self):
+        commands = []
+
+        if self.game.getQuery() != None: commands.append('sys query')
+
+        return commands
+
+    def updateGame(self, playerCommands):
+        self.processCommands(self.generateEngineCommands())
+        self.processCommands(playerCommands)
 
 class MapTileTypeToMapTile:
     def get(self, type):
@@ -170,9 +192,9 @@ class Map:
 class ItemTypeToItem:
     def get(self, type):
         item = None
-        if type   == ItemType.apple:    item = Item(ItemType.apple, 'apple', 1)
-        elif type == ItemType.banana:   item = Item(ItemType.banana, 'banana', 1)
-        elif type == ItemType.pear:     item = Item(ItemType.pear, 'pear', 1)
+        if type   == ItemType.apple:    item = Item(ItemType.apple, 'apple', 1, {'edible': 1})
+        elif type == ItemType.banana:   item = Item(ItemType.banana, 'banana', 1, {'edible': 1})
+        elif type == ItemType.pear:     item = Item(ItemType.pear, 'pear', 1, {'edible': 1})
         return item
 
 class ItemType:
@@ -181,14 +203,16 @@ class ItemType:
     pear    = 'pear'
 
 class Item:
-    def __init__(self, type, name, weight):
+    def __init__(self, type, name, weight, props):
         self.type = type
         self.name = name
         self.weight = weight
+        self.props = props
 
     def getType(self): return self.type
     def getName(self): return self.name
     def getWeight(self): return self.weight
+    def getProp(self, k): return self.props[k]
 
 class Inventory:
     def __init__(self, capacity):
@@ -278,5 +302,10 @@ class Game:
         self.player = player
         self.map = map
 
+        self.query = None
+
     def getPlayer(self): return self.player
     def getMap(self): return self.map
+
+    def getQuery(self): return self.query
+    def setQuery(self, query): self.query = query
