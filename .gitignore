@@ -1,4 +1,15 @@
+# libtcod python lib
+libtcodpy.py
+
+# libtcod font bitmap
+terminal.png
+
+# libtcod windows includes
 SDL.dll
 libtcod-mingw.dll
-libtcodpy.py
-terminal.png
+
+# libtcod linux includes
+libtcod.so
+
+# python compiled modules
+*.pyc
