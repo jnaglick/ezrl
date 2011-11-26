@@ -140,7 +140,6 @@ class MapTileTypeToMapTile:
         elif type == MapTileType.hwall: tile = MapTile(MapTileType.hwall, {'walkable': 0, 'opacity': 1})
         elif type == MapTileType.vwall: tile = MapTile(MapTileType.vwall, {'walkable': 0, 'opacity': 1})
         elif type == MapTileType.xwall: tile = MapTile(MapTileType.xwall, {'walkable': 0, 'opacity': 1})
-        elif type == MapTileType.hall:  tile = MapTile(MapTileType.hall,  {'walkable': 1, 'opacity': 0})
         elif type == MapTileType.door:  tile = MapTile(MapTileType.door,  {'walkable': 1, 'opacity': 0, 'open': 1})
         return tile
 
@@ -151,7 +150,6 @@ class MapTileType:
     vwall   = 'vwall'
     xwall   = 'xwall'
     door    = 'door'
-    hall    = 'hall'
 
 class MapTile:
     def __init__(self, type, props):

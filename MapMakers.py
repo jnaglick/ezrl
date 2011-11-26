@@ -207,7 +207,6 @@ class VWall(MapTileRectangle):
     def __init__(self, x, y, h):
         MapTileRectangle.__init__(self, x, y, 1, h,
                                   MapTileType.vwall, {MapTileType.hwall: MapTileType.xwall,
-                                                    MapTileType.hall:  MapTileType.door,
                                                     MapTileType.xwall: MapTileType.xwall,
                                                     MapTileType.floor: MapTileType.floor})
 
@@ -215,16 +214,5 @@ class HWall(MapTileRectangle):
     def __init__(self, x, y, w):
         MapTileRectangle.__init__(self, x, y, w, 1,
                                   MapTileType.hwall, {MapTileType.vwall: MapTileType.xwall,
-                                                    MapTileType.hall:  MapTileType.door,
                                                     MapTileType.xwall: MapTileType.xwall,
                                                     MapTileType.floor: MapTileType.floor})
-
-class VHall(MapTileRectangle):
-    def __init__(self, x, y, h):
-        MapTileRectangle.__init__(self, x, y, 1, h,
-                                  MapTileType.hall, {MapTileType.hwall: MapTileType.door})
-
-class HHall(MapTileRectangle):
-    def __init__(self, x, y, w):
-        MapTileRectangle.__init__(self, x, y, w, 1,
-                                  MapTileType.hall, {MapTileType.vwall: MapTileType.door})

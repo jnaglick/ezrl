@@ -117,7 +117,6 @@ class MapTileToConsoleItem:
             elif type == MapTileType.hwall: consoleItem = ConsoleItem('#', Color(188, 188, 188)) # -
             elif type == MapTileType.vwall: consoleItem = ConsoleItem('#', Color(188, 188, 188)) # |
             elif type == MapTileType.xwall: consoleItem = ConsoleItem('#', Color(148, 148, 148)) # +
-            elif type == MapTileType.hall:  consoleItem = ConsoleItem('*', Color(188, 188, 188))
             elif type == MapTileType.none:  consoleItem = ConsoleItem('~', Color(0, 0, 127))
             elif type == MapTileType.door:
                 if mapTile.getProp('open') == 1:   consoleItem = ConsoleItem('o', Color(188, 188, 188))
