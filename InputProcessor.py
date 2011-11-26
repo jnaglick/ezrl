@@ -7,7 +7,7 @@ class ConsoleInputProcessor: # InputProcessor that simulates a CLI
         self.command = None
 
     def fetchCommands(self):
-        if self.command == None: self.command = ''
+        if self.command is None: self.command = ''
 
         print '$ %s' % self.command
 
@@ -69,10 +69,10 @@ class KeyboardInputProcessor:
 
         key = console_wait_for_keypress(True)
 
-        if key.c != 0: keycode = key.c #printable char
+        if key.c: keycode = key.c #printable char
         else: keycode = key.vk #physical key
 
-        if self.partialCommand != None:
+        if self.partialCommand is not None:
             actions.append(self.resolvePartialCommand(keycode))
         else:
             try:

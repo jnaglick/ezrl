@@ -6,6 +6,6 @@ displayManager = DisplayManager()
 engine = Engine()
 inputProcessor = KeyboardInputProcessor()
 
-while(True):
+while True:
     displayManager.draw(engine.getGame())
     engine.updateGame(inputProcessor.fetchCommands())

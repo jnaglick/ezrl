@@ -20,9 +20,9 @@ class MapMaker:
         for w in range(0, rect.w):
             for h in range(0, rect.h):
                 tileTypeToSet = rect.tileType
-                if rect.tileTypeInteractions != None:
+                if rect.tileTypeInteractions is not None:
                     targetTile = self.map.getTile(rect.x + w, rect.y + h)
-                    if targetTile != None:
+                    if targetTile is not None:
                         try: tileTypeToSet = rect.tileTypeInteractions[targetTile.getType()]
                         except KeyError: None
                 self.map.setTile(rect.x + w, rect.y + h, self.mapTileTypeToMapTile.get(tileTypeToSet))
@@ -136,10 +136,10 @@ class RandomMapMaker(MapMaker):
             rand_floor_x = self._randomLinearSkew(room.x + 1, room.x + room.w - 2, skew_strength, x_skew_dir)
             rand_floor_y = self._randomLinearSkew(room.y + 1, room.y + room.h - 2, skew_strength, y_skew_dir)
             newRoom = self._drawRandomSizeCardinalRoom(rand_floor_x, rand_floor_y, subroom_absolute_max_size)
-            if newRoom == False: # No more rooms could fit, end prematurely
-                return room
-            else:
+            if newRoom:
                 room = newRoom
+            else: # No more rooms could fit, end prematurely
+                return room
         return room
 
     # dir: {True = max, False = min}

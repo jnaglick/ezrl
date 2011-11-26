@@ -1,5 +1,3 @@
-from random import randint
-
 class Engine:
     def __init__(self):
         from MapMakers import RandomMapMaker, TestMapMaker
@@ -41,7 +39,7 @@ class Engine:
 
     def _vEntityEat(self, entity, adj):
         item = entity.getInventory().getItem(int(adj))
-        return item != None and item.getProp('edible') == 1
+        return item is not None and item.getProp('edible') == 1
 
     def _verifyEntityCommand(self, entity, verb, adj):
         if verb == 'move': return self._vEntityMove(entity, adj)
@@ -84,7 +82,7 @@ class Engine:
 
         entity.addStatusMessage('You walk ' + d + '.')
 
-    def _cEntityPickup(self, entity, adj):
+    def _cEntityPickup(self, entity):
         tile = self.game.getMap().getTile(entity.getX(), entity.getY())
         if tile.getInventory().getSize() > 0:
             item = tile.getInventory().takeFirstItem()
@@ -98,11 +96,11 @@ class Engine:
         entity.addStatusMessage('You eat the ' + food.getName() + '. It tasted great, really, seriously.')
 
     def _processEntityCommand(self, entity, verb, adj):
-        if (not self._verifyEntityCommand(entity, verb, adj)):
+        if not self._verifyEntityCommand(entity, verb, adj):
             entity.addStatusMessage('You can\'t do that.')
             return
         if verb == 'move': self._cEntityMove(entity, adj)
-        elif verb == 'pickup': self._cEntityPickup(entity, adj)
+        elif verb == 'pickup': self._cEntityPickup(entity)
         elif verb == 'eat': self._cEntityEat(entity, adj)
 
     def _processSysCommand(self, verb, adj):
@@ -110,11 +108,9 @@ class Engine:
         if verb == 'query': self.game.setQuery(adj)
 
     def processCommands(self, commands):
-        if commands == None: return
+        if commands is None: return
 
         for c in commands:
-            print 'command: %s' % c
-
             noun, verb, adj = None, None, None
 
             a = c.split()
@@ -128,7 +124,7 @@ class Engine:
     def generateEngineCommands(self):
         commands = []
 
-        if self.game.getQuery() != None: commands.append('sys query')
+        if self.game.getQuery() is not None: commands.append('sys query')
 
         return commands
 

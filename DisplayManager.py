@@ -32,7 +32,7 @@ class DisplayManager:
     def _drawPlayerInfo(self, player):
         playerItemWeight = 0
         for item in player.getInventory().getItems():
-            if item != None:
+            if item is not None:
                 playerItemWeight += item.getWeight()
         s = 'X:[' + str(player.getX()) + '] ' + \
             'Y:[' + str(player.getY()) + '] ' + \
@@ -49,7 +49,7 @@ class DisplayManager:
         labels = []
         for i in range(inventory.getCapacity()):
             item = inventory.getItem(i)
-            if item == None:
+            if item is None:
                 labels.append(str(i) + ' - ')
             else:
                 labels.append(str(i) + ' - ' + item.getName())
@@ -66,16 +66,16 @@ class DisplayManager:
             j = 0
             for x in range(x_start, x_stop):
                 tile = map.getTile(x, y)
-                if tile != None:
+                if tile is not None:
                     c = self.mapTileToConsoleItem.get(tile)
                     self.console.drawConsoleItem(self.mapOffset[0] + j, self.mapOffset[1] + i, c)
                 j += 1
             i += 1
 
-    def _drawPlayer(self, player):
+    def _drawPlayer(self):
         c = ConsoleItem('@', white)
-        self.console.drawConsoleItem(self.mapOffset[0] + self.M_HORZ_DRAW_DISTANCE, \
-                                     self.mapOffset[1] + self.M_VERT_DRAW_DISTANCE, \
+        self.console.drawConsoleItem(self.mapOffset[0] + self.M_HORZ_DRAW_DISTANCE,
+                                     self.mapOffset[1] + self.M_VERT_DRAW_DISTANCE,
                                      c)
 
     def draw(self, game):
@@ -98,7 +98,7 @@ class DisplayManager:
                       player.getY() + self.M_VERT_DRAW_DISTANCE+1)
 
         # and finally, the @ sign
-        self._drawPlayer(player)
+        self._drawPlayer()
 
         self.console.flush()
 
@@ -137,7 +137,8 @@ class ConsoleItem:
 
 class Console:
     def __init__(self, consoleWidth, consoleHeight, consoleTitle):
-        self.c = console_init_root(consoleWidth, consoleHeight, consoleTitle, False)
+        console_set_custom_font("fonts/lucida12x12_gs_tc.png", FONT_LAYOUT_TCOD | FONT_TYPE_GREYSCALE)
+        self.c = console_init_root(consoleWidth, consoleHeight, consoleTitle)
 
     def drawConsoleItem(self, x, y, consoleItem):
         if type(consoleItem.getI()) == StringType:
@@ -151,13 +152,13 @@ class Console:
     def _drawChar(self, x, y, consoleItem):
         console_set_char(self.c, x, y, consoleItem.getI())
         console_set_fore(self.c, x, y, consoleItem.getColor())
-        if (consoleItem.getBColor() != None): console_set_back(self.c, x, y, consoleItem.getBColor())
+        if consoleItem.getBColor() is not None: console_set_back(self.c, x, y, consoleItem.getBColor())
 
     def _drawString(self, x, y, consoleItem):
         console_print_left(self.c, x, y, BKGND_NONE, consoleItem.getI())
         for i in range(0, len(consoleItem.getI())):
             console_set_fore(self.c, x+i, y, consoleItem.getColor())
-        if (consoleItem.getBColor() != None):
+        if consoleItem.getBColor() is not None:
             for i in range(0, len(consoleItem.getI())):
                 console_set_back(self.c, x+i, y, consoleItem.getBColor())
 
