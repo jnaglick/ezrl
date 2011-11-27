@@ -136,7 +136,6 @@ class ConsoleItem:
 
 class Console:
     def __init__(self, consoleWidth, consoleHeight, consoleTitle):
-        console_set_custom_font("fonts/lucida12x12_gs_tc.png", FONT_LAYOUT_TCOD | FONT_TYPE_GREYSCALE)
         self.c = console_init_root(consoleWidth, consoleHeight, consoleTitle)
 
     def drawConsoleItem(self, x, y, consoleItem):
