@@ -1,3 +1,5 @@
+from EngineActions import *
+
 class Engine:
     def __init__(self):
         from MapMakers import RandomMapMaker, TestMapMaker
@@ -15,111 +17,27 @@ class Engine:
 
     def getGame(self): return self.game
 
-    def _vTileWalkable(self, x, y):
-        map = self.game.getMap()
-        return x >= 0 and x < map.getW() and y >= 0 and y < map.getH() and map.getTile(x, y).getProp('walkable')
+    def _instance(self, className, initArgs):
+        constructor = globals()[className]
+        instance = constructor(*initArgs)
+        return instance
 
-    def _vEntityMove(self, entity, adj):
-        x, y = entity.getX(), entity.getY()
-        try:
-            return {
-                'u' : self._vTileWalkable(x, y - 1),
-                'd' : self._vTileWalkable(x, y + 1),
-                'l' : self._vTileWalkable(x - 1, y),
-                'r' : self._vTileWalkable(x + 1, y),
-                'ul' : self._vTileWalkable(x - 1, y - 1),
-                'ur' : self._vTileWalkable(x + 1, y - 1),
-                'dl' : self._vTileWalkable(x - 1, y + 1),
-                'dr' : self._vTileWalkable(x + 1, y + 1)
-            }[adj]
-        except KeyError: return False
+    def _gameAction(self, action, adj):
+        self._instance(action, (self.game, adj))
 
-    def _vEntityPickup(self, entity):
-        return entity.getInventory().isNotFull()
-
-    def _vEntityEat(self, entity, adj):
-        item = entity.getInventory().getItem(int(adj))
-        return item is not None and item.getProp('edible') == 1
-
-    def _verifyEntityCommand(self, entity, verb, adj):
-        if verb == 'move': return self._vEntityMove(entity, adj)
-        elif verb == 'pickup': return self._vEntityPickup(entity)
-        elif verb == 'eat': return self._vEntityEat(entity, adj)
-        else: return False
-
-    def _cEntityMove(self, entity, adj):
-        if adj == 'u':
-            entity.decY()
-            d = 'up'
-        elif adj == 'd':
-            entity.incY()
-            d = 'down'
-        elif adj == 'l':
-            entity.decX()
-            d = 'left'
-        elif adj == 'r':
-            entity.incX()
-            d = 'right'
-        elif adj == 'ul':
-            entity.decY()
-            entity.decX()
-            d = 'up and to the left'
-        elif adj == 'ur':
-            entity.decY()
-            entity.incX()
-            d = 'up and to the right'
-        elif adj == 'dl':
-            entity.incY()
-            entity.decX()
-            d = 'down and to the left'
-        elif adj == 'dr':
-            entity.incY()
-            entity.incX()
-            d = 'down and to the right'
-
-        for i in range(len(adj)):
-            entity.incSteps()
-
-        entity.addStatusMessage('You walk ' + d + '.')
-
-    def _cEntityPickup(self, entity):
-        tile = self.game.getMap().getTile(entity.getX(), entity.getY())
-        if tile.getInventory().getSize() > 0:
-            item = tile.getInventory().takeFirstItem()
-            entity.getInventory().addItem(item)
-            entity.addStatusMessage('You pickup a ' + item.getName() + '.')
-        else:
-            entity.addStatusMessage('There\'s nothing to pickup.')
-
-    def _cEntityEat(self, entity, adj):
-        food = entity.getInventory().takeItem(int(adj))
-        entity.addStatusMessage('You eat the ' + food.getName() + '. It tasted great, really, seriously.')
-
-    def _processEntityCommand(self, entity, verb, adj):
-        if not self._verifyEntityCommand(entity, verb, adj):
-            entity.addStatusMessage('You can\'t do that.')
-            return
-        if verb == 'move': self._cEntityMove(entity, adj)
-        elif verb == 'pickup': self._cEntityPickup(entity)
-        elif verb == 'eat': self._cEntityEat(entity, adj)
-
-    def _processSysCommand(self, verb, adj):
-        if verb == 'exit': exit()
-        if verb == 'query': self.game.setQuery(adj)
+    def _entityGameAction(self, action, entity, adj):
+        self._instance(action, (entity, self.game, adj))
 
     def processCommands(self, commands):
         if commands is None: return
-
         for c in commands:
-            noun, verb, adj = None, None, None
-
+            entity, action, adj = None, None, None
             a = c.split()
-            if len(a) >= 1: noun = a[0]
-            if len(a) >= 2: verb = a[1]
-            if len(a) >= 3: adj = c[(len(noun) + len(verb) + 2):]
-
-            if noun == 'sys': self._processSysCommand(verb, adj)
-            if noun == 'p': self._processEntityCommand(self.game.getPlayer(), verb, adj)
+            if len(a) >= 1: entity = a[0]
+            if len(a) >= 2: action = a[1]
+            if len(a) >= 3: adj = c[(len(entity) + len(action) + 2):]
+            if entity == 'sys': self._gameAction(action, adj)
+            if entity == 'p':   self._entityGameAction(action, self.game.getPlayer(), adj)
 
     def generateEngineCommands(self):
         commands = []

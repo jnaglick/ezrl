@@ -15,7 +15,7 @@ class ConsoleInputProcessor: # InputProcessor that simulates a CLI
 
         if key.c != 0: #printable char (??)
             if key.c == 27: # Esc
-                return ['sys exit']
+                return ['sys quit']
             elif key.c == 13: # Enter
                 return self.resolve()
             elif key.c == 8: # Backspace
@@ -39,7 +39,7 @@ class KeyboardInputProcessor:
         for i in range(0, 10): self.inventoryPartialCommands[ord(str(i))] = str(i) # ord('0'):'0', ord('1'):'1', etc
         
         self.inputToCommand = {
-            ord('x')    : 'sys exit',
+            ord('x')    : 'sys quit',
 
             KEY_UP      : 'p move u',
             ord('k')    : 'p move u',
