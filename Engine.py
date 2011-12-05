@@ -193,13 +193,9 @@ class Player:
 
     def getY(self): return self.y
     def setY(self, y): self.y = y
-    def incY(self): self.y += 1
-    def decY(self): self.y -= 1
 
     def getX(self): return self.x
     def setX(self, x): self.x = x
-    def incX(self): self.x += 1
-    def decX(self): self.x -= 1
 
     def getSteps(self): return self.steps
     def incSteps(self): self.steps += 1

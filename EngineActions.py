@@ -52,10 +52,10 @@ class move(EntityGameAction):
         return verified
 
     def do(self):
-        if 'u' in self.adj: self.entity.decY()
-        if 'd' in self.adj: self.entity.incY()
-        if 'l' in self.adj: self.entity.decX()
-        if 'r' in self.adj: self.entity.incX()
+        if 'u' in self.adj: self.entity.setY(self.entity.getY()-1)
+        if 'd' in self.adj: self.entity.setY(self.entity.getY()+1)
+        if 'l' in self.adj: self.entity.setX(self.entity.getX()-1)
+        if 'r' in self.adj: self.entity.setX(self.entity.getX()+1)
 
         self.entity.incSteps()
         if len(self.adj) == 2: self.entity.incSteps()
