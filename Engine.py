@@ -94,56 +94,6 @@ class Map:
     def getW(self): return self.w
     def getH(self): return self.h
 
-class CharacterMap:
-    def __init__(self, w, h):
-        self.w = w
-        self.h = h
-
-        self.charactersByCoords = {}
-        self.coordsByCharacters = {}
-        self.charactersById = {}
-        self.currentId = 0
-
-    def addCharacter(self, character, x, y):
-        self.charactersByCoords[(x, y)] = character
-        self.coordsByCharacters[character] = (x, y)
-        self.charactersById[self.currentId] = character
-        self.currentId += 1
-        return self.currentId - 1 # return character id
-
-    def getCharacterFromCoords(self, x, y):
-        try: return self.charactersByCoords[(x, y)]
-        except KeyError: return None
-
-    def getCoords(self, character):
-        return self.coordsByCharacters[character]
-
-    def getCharacterFromId(self, id):
-        return self.charactersById[id]
-
-    def _doMove(self, character, newX, newY):
-        oldX, oldY = self.getCoords(character)
-
-        self.charactersByCoords[(oldX, oldY)] = None
-        self.charactersByCoords[(newX, newY)] = character
-        self.coordsByCharacters[character] = (newX, newY)
-
-    def moveUp(self, character):
-        x, y =  self.getCoords(character)
-        self._doMove(character, x, y-1)
-
-    def moveDown(self, character):
-        x, y =  self.getCoords(character)
-        self._doMove(character, x, y+1)
-
-    def moveLeft(self, character):
-        x, y =  self.getCoords(character)
-        self._doMove(character, x-1, y)
-
-    def moveRight(self, character):
-        x, y =  self.getCoords(character)
-        self._doMove(character, x+1, y)
-
 class ItemTypeToItem:
     def get(self, type):
         item = None
@@ -225,6 +175,56 @@ class Inventory:
     def isEmpty(self): return self.getSize() == 0
     def isNotFull(self): return not self.isFull()
     def isNotEmpty(self): return not self.isEmpty()
+
+class CharacterMap:
+    def __init__(self, w, h):
+        self.w = w
+        self.h = h
+
+        self.charactersByCoords = {}
+        self.coordsByCharacters = {}
+        self.charactersById = {}
+        self.currentId = 0
+
+    def addCharacter(self, character, x, y):
+        self.charactersByCoords[(x, y)] = character
+        self.coordsByCharacters[character] = (x, y)
+        self.charactersById[self.currentId] = character
+        self.currentId += 1
+        return self.currentId - 1 # return character id
+
+    def getCharacterFromCoords(self, x, y):
+        try: return self.charactersByCoords[(x, y)]
+        except KeyError: return None
+
+    def getCoords(self, character):
+        return self.coordsByCharacters[character]
+
+    def getCharacterFromId(self, id):
+        return self.charactersById[id]
+
+    def _doMove(self, character, newX, newY):
+        oldX, oldY = self.getCoords(character)
+
+        self.charactersByCoords[(oldX, oldY)] = None
+        self.charactersByCoords[(newX, newY)] = character
+        self.coordsByCharacters[character] = (newX, newY)
+
+    def moveUp(self, character):
+        x, y =  self.getCoords(character)
+        self._doMove(character, x, y-1)
+
+    def moveDown(self, character):
+        x, y =  self.getCoords(character)
+        self._doMove(character, x, y+1)
+
+    def moveLeft(self, character):
+        x, y =  self.getCoords(character)
+        self._doMove(character, x-1, y)
+
+    def moveRight(self, character):
+        x, y =  self.getCoords(character)
+        self._doMove(character, x+1, y)
 
 class Player:
     def __init__(self):
