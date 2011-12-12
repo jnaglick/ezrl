@@ -90,6 +90,10 @@ class DisplayManager:
         self._drawGameQuery(game.getQuery())
 
         # map
+        if playerX - self.M_HORZ_DRAW_DISTANCE <= 0: playerX = self.M_HORZ_DRAW_DISTANCE
+        if playerX + self.M_HORZ_DRAW_DISTANCE+1 > game.getMap().getW(): playerX = game.getMap().getW() - self.M_HORZ_DRAW_DISTANCE-1
+        if playerY - self.M_VERT_DRAW_DISTANCE <= 0: playerY = self.M_VERT_DRAW_DISTANCE
+        if playerY + self.M_VERT_DRAW_DISTANCE+1 > game.getMap().getH(): playerY = game.getMap().getH() - self.M_VERT_DRAW_DISTANCE-1
         self._drawMap(game.getMap(),
                       game.getCharacterMap(),
                       playerX - self.M_HORZ_DRAW_DISTANCE,
