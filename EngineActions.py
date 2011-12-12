@@ -33,7 +33,7 @@ class move(EntityGameAction):
     def verify(self):
         def walkable(x, y): return x >= 0 and x < self.game.getMap().getW() and y >= 0 and y < self.game.getMap().getH() and self.game.getMap().getTile(x, y).getProp('walkable')
 
-        x, y = self.entity.getX(), self.entity.getY()
+        x, y = self.game.getCharacterCoords(self.entity)
         try:
             verified = {
                 'u' : walkable(x, y - 1),
@@ -52,10 +52,10 @@ class move(EntityGameAction):
         return verified
 
     def do(self):
-        if 'u' in self.adj: self.entity.setY(self.entity.getY()-1)
-        if 'd' in self.adj: self.entity.setY(self.entity.getY()+1)
-        if 'l' in self.adj: self.entity.setX(self.entity.getX()-1)
-        if 'r' in self.adj: self.entity.setX(self.entity.getX()+1)
+        if 'u' in self.adj: self.game.getCharacterMap().moveUp(self.entity)
+        if 'd' in self.adj: self.game.getCharacterMap().moveDown(self.entity)
+        if 'l' in self.adj: self.game.getCharacterMap().moveLeft(self.entity)
+        if 'r' in self.adj: self.game.getCharacterMap().moveRight(self.entity)
 
         self.entity.incSteps()
         if len(self.adj) == 2: self.entity.incSteps()
@@ -82,14 +82,16 @@ class pickup(EntityGameAction):
             self.entity.addStatusMessage('Your inventory is full.')
             return False
         else:
-            tile = self.game.getMap().getTile(self.entity.getX(), self.entity.getY())
+            x, y = self.game.getCharacterCoords(self.entity)
+            tile = self.game.getMap().getTile(x, y)
             if tile.getInventory().getSize() > 0:
                 return True
             else:
                 self.entity.addStatusMessage('There\'s nothing to pickup.')
 
     def do(self):
-        tile = self.game.getMap().getTile(self.entity.getX(), self.entity.getY())
+        x, y = self.game.getCharacterCoords(self.entity)
+        tile = self.game.getMap().getTile(x, y)
         item = tile.getInventory().takeFirstItem()
         self.entity.getInventory().addItem(item)
         self.entity.addStatusMessage('You pickup a ' + item.getName() + '.')

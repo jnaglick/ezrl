@@ -29,13 +29,13 @@ class DisplayManager:
         self.console = Console(self.C_WIDTH, self.C_HEIGHT, self.C_TITLE)
         self.mapTileToConsoleItem = MapTileToConsoleItem()
 
-    def _drawPlayerInfo(self, player):
+    def _drawPlayerInfo(self, player, playerX, playerY):
         playerItemWeight = 0
         for item in player.getInventory().getItems():
             if item is not None:
                 playerItemWeight += item.getWeight()
-        s = 'X:[' + str(player.getX()) + '] ' + \
-            'Y:[' + str(player.getY()) + '] ' + \
+        s = 'X:[' + str(playerX) + '] ' + \
+            'Y:[' + str(playerY) + '] ' + \
             'Steps:[' + str(player.getSteps()) + '] ' + \
             'Weight:[' + str(playerItemWeight) + ']'
         c = ConsoleItem(s, Color(128, 128, 128))
@@ -60,45 +60,42 @@ class DisplayManager:
         c = ConsoleItem(query, Color(128, 128, 128))
         self.console.drawConsoleItem(self.gameQueryOffset[0], self.gameQueryOffset[1], c)
 
-    def _drawMap(self, map, x_start, x_stop, y_start, y_stop):
+    def _drawMap(self, map, characterMap, x_start, x_stop, y_start, y_stop):
         i = 0
         for y in range(y_start, y_stop):
             j = 0
             for x in range(x_start, x_stop):
-                tile = map.getTile(x, y)
-                if tile is not None:
-                    c = self.mapTileToConsoleItem.get(tile)
+                character = characterMap.getCharacterFromCoords(x, y)
+                if character is not None:
+                    c = ConsoleItem('@', white) # right now, only character is the player
                     self.console.drawConsoleItem(self.mapOffset[0] + j, self.mapOffset[1] + i, c)
+                else:
+                    tile = map.getTile(x, y)
+                    if tile is not None:
+                        c = self.mapTileToConsoleItem.get(tile)
+                        self.console.drawConsoleItem(self.mapOffset[0] + j, self.mapOffset[1] + i, c)
                 j += 1
             i += 1
-
-    def _drawPlayer(self):
-        c = ConsoleItem('@', white)
-        self.console.drawConsoleItem(self.mapOffset[0] + self.M_HORZ_DRAW_DISTANCE,
-                                     self.mapOffset[1] + self.M_VERT_DRAW_DISTANCE,
-                                     c)
 
     def draw(self, game):
         self.console.clear()
 
         player = game.getPlayer()
+        playerX, playerY = game.getCharacterCoords(player)
 
         # info panes
-        self._drawPlayerInfo(player)
+        self._drawPlayerInfo(player, playerX, playerY)
         self._drawPlayerStatusMessages(player)
         self._drawPlayerInventory(player.getInventory())
-
         self._drawGameQuery(game.getQuery())
 
         # map
         self._drawMap(game.getMap(),
-                      player.getX() - self.M_HORZ_DRAW_DISTANCE,
-                      player.getX() + self.M_HORZ_DRAW_DISTANCE+1,
-                      player.getY() - self.M_VERT_DRAW_DISTANCE,
-                      player.getY() + self.M_VERT_DRAW_DISTANCE+1)
-
-        # and finally, the @ sign
-        self._drawPlayer()
+                      game.getCharacterMap(),
+                      playerX - self.M_HORZ_DRAW_DISTANCE,
+                      playerX + self.M_HORZ_DRAW_DISTANCE+1,
+                      playerY - self.M_VERT_DRAW_DISTANCE,
+                      playerY + self.M_VERT_DRAW_DISTANCE+1)
 
         self.console.flush()
 

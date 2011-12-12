@@ -4,16 +4,9 @@ class Engine:
     def __init__(self):
         from MapMakers import RandomMapMaker, TestMapMaker
 
-        #create map
-        #mapMaker = TestMapMaker()
         mapMaker = RandomMapMaker()
-
-        #create player
-        getPlayerStartCoords = mapMaker.getPlayerStartCoords()
-        player = Player(getPlayerStartCoords[0], getPlayerStartCoords[1])
-
-        #create game
-        self.game = Game(player, mapMaker.getMap())
+        player = Player()
+        self.game = Game(mapMaker.getMap(), player, mapMaker.getPlayerStartCoords()[0], mapMaker.getPlayerStartCoords()[1])
 
     def getGame(self): return self.game
 
@@ -101,6 +94,56 @@ class Map:
     def getW(self): return self.w
     def getH(self): return self.h
 
+class CharacterMap:
+    def __init__(self, w, h):
+        self.w = w
+        self.h = h
+
+        self.charactersByCoords = {}
+        self.coordsByCharacters = {}
+        self.charactersById = {}
+        self.currentId = 0
+
+    def addCharacter(self, character, x, y):
+        self.charactersByCoords[(x, y)] = character
+        self.coordsByCharacters[character] = (x, y)
+        self.charactersById[self.currentId] = character
+        self.currentId += 1
+        return self.currentId - 1 # return character id
+
+    def getCharacterFromCoords(self, x, y):
+        try: return self.charactersByCoords[(x, y)]
+        except KeyError: return None
+
+    def getCoords(self, character):
+        return self.coordsByCharacters[character]
+
+    def getCharacterFromId(self, id):
+        return self.charactersById[id]
+
+    def _doMove(self, character, newX, newY):
+        oldX, oldY = self.getCoords(character)
+
+        self.charactersByCoords[(oldX, oldY)] = None
+        self.charactersByCoords[(newX, newY)] = character
+        self.coordsByCharacters[character] = (newX, newY)
+
+    def moveUp(self, character):
+        x, y =  self.getCoords(character)
+        self._doMove(character, x, y-1)
+
+    def moveDown(self, character):
+        x, y =  self.getCoords(character)
+        self._doMove(character, x, y+1)
+
+    def moveLeft(self, character):
+        x, y =  self.getCoords(character)
+        self._doMove(character, x-1, y)
+
+    def moveRight(self, character):
+        x, y =  self.getCoords(character)
+        self._doMove(character, x+1, y)
+
 class ItemTypeToItem:
     def get(self, type):
         item = None
@@ -184,18 +227,10 @@ class Inventory:
     def isNotEmpty(self): return not self.isEmpty()
 
 class Player:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+    def __init__(self):
         self.steps = 0
         self.statusMessages = []
         self.inventory = Inventory(10)
-
-    def getY(self): return self.y
-    def setY(self, y): self.y = y
-
-    def getX(self): return self.x
-    def setX(self, x): self.x = x
 
     def getSteps(self): return self.steps
     def incSteps(self): self.steps += 1
@@ -206,14 +241,17 @@ class Player:
     def addStatusMessage(self, statusMessage): self.statusMessages.append(statusMessage)
 
 class Game:
-    def __init__(self, player, map):
-        self.player = player
+    def __init__(self, map, player, playerStartX, playerStartY):
         self.map = map
-
+        self.characterMap = CharacterMap(self.map.getW(), self.map.getH())
+        self.playerId = self.characterMap.addCharacter(player, playerStartX, playerStartY)
         self.query = None
 
-    def getPlayer(self): return self.player
     def getMap(self): return self.map
+
+    def getCharacterMap(self): return self.characterMap
+    def getPlayer(self): return self.characterMap.getCharacterFromId(self.playerId)
+    def getCharacterCoords(self, entity): return self.characterMap.getCoords(entity)
 
     def getQuery(self): return self.query
     def setQuery(self, query): self.query = query
