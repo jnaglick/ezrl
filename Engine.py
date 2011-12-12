@@ -18,19 +18,19 @@ class Engine:
     def _gameAction(self, action, adj):
         self._instance(action, (self.game, adj))
 
-    def _entityGameAction(self, action, entity, adj):
-        self._instance(action, (entity, self.game, adj))
+    def _characterGameAction(self, action, character, adj):
+        self._instance(action, (character, self.game, adj))
 
     def processCommands(self, commands):
         if commands is None: return
         for c in commands:
-            entity, action, adj = None, None, None
+            character, action, adj = None, None, None
             a = c.split()
-            if len(a) >= 1: entity = a[0]
+            if len(a) >= 1: character = a[0]
             if len(a) >= 2: action = a[1]
-            if len(a) >= 3: adj = c[(len(entity) + len(action) + 2):]
-            if entity == 'sys': self._gameAction(action, adj)
-            if entity == 'p':   self._entityGameAction(action, self.game.getPlayer(), adj)
+            if len(a) >= 3: adj = c[(len(character) + len(action) + 2):]
+            if character == 'sys': self._gameAction(action, adj)
+            if character == 'p':   self._characterGameAction(action, self.game.getPlayer(), adj)
 
     def generateEngineCommands(self):
         commands = []
@@ -251,7 +251,7 @@ class Game:
 
     def getCharacterMap(self): return self.characterMap
     def getPlayer(self): return self.characterMap.getCharacterFromId(self.playerId)
-    def getCharacterCoords(self, entity): return self.characterMap.getCoords(entity)
+    def getCharacterCoords(self, character): return self.characterMap.getCoords(character)
 
     def getQuery(self): return self.query
     def setQuery(self, query): self.query = query

@@ -21,19 +21,19 @@ class quit(GameAction):
     def verify(self): return True
     def do(self): exit()
 
-class EntityGameAction(GameAction): # An action that affects an entity and/or the game
-    def __init__(self, entity, game, adj):
-        self.entity = entity
+class CharacterGameAction(GameAction): # An action that affects an character and/or the game
+    def __init__(self, character, game, adj):
+        self.character = character
         GameAction.__init__(self, game, adj)
 
-class move(EntityGameAction):
-    def __init__(self, entity, game, adj):
-        EntityGameAction.__init__(self, entity, game, adj)
+class move(CharacterGameAction):
+    def __init__(self, character, game, adj):
+        CharacterGameAction.__init__(self, character, game, adj)
 
     def verify(self):
         def walkable(x, y): return x >= 0 and x < self.game.getMap().getW() and y >= 0 and y < self.game.getMap().getH() and self.game.getMap().getTile(x, y).getProp('walkable')
 
-        x, y = self.game.getCharacterCoords(self.entity)
+        x, y = self.game.getCharacterCoords(self.character)
         try:
             verified = {
                 'u' : walkable(x, y - 1),
@@ -47,18 +47,18 @@ class move(EntityGameAction):
             }[self.adj]
         except KeyError: verified = False
 
-        if not verified: self.entity.addStatusMessage('That space is blocked.')
+        if not verified: self.character.addStatusMessage('That space is blocked.')
 
         return verified
 
     def do(self):
-        if 'u' in self.adj: self.game.getCharacterMap().moveUp(self.entity)
-        if 'd' in self.adj: self.game.getCharacterMap().moveDown(self.entity)
-        if 'l' in self.adj: self.game.getCharacterMap().moveLeft(self.entity)
-        if 'r' in self.adj: self.game.getCharacterMap().moveRight(self.entity)
+        if 'u' in self.adj: self.game.getCharacterMap().moveUp(self.character)
+        if 'd' in self.adj: self.game.getCharacterMap().moveDown(self.character)
+        if 'l' in self.adj: self.game.getCharacterMap().moveLeft(self.character)
+        if 'r' in self.adj: self.game.getCharacterMap().moveRight(self.character)
 
-        self.entity.incSteps()
-        if len(self.adj) == 2: self.entity.incSteps()
+        self.character.incSteps()
+        if len(self.adj) == 2: self.character.incSteps()
 
         way = {
             'u' : 'up',
@@ -71,45 +71,45 @@ class move(EntityGameAction):
             'dr' : 'down and to the right'
         }[self.adj]
 
-        self.entity.addStatusMessage('You move ' + way + '.')
+        self.character.addStatusMessage('You move ' + way + '.')
 
-class pickup(EntityGameAction):
-    def __init__(self, entity, game, adj):
-        EntityGameAction.__init__(self, entity, game, None)
+class pickup(CharacterGameAction):
+    def __init__(self, character, game, adj):
+        CharacterGameAction.__init__(self, character, game, None)
 
     def verify(self):
-        if self.entity.getInventory().isFull():
-            self.entity.addStatusMessage('Your inventory is full.')
+        if self.character.getInventory().isFull():
+            self.character.addStatusMessage('Your inventory is full.')
             return False
         else:
-            x, y = self.game.getCharacterCoords(self.entity)
+            x, y = self.game.getCharacterCoords(self.character)
             tile = self.game.getMap().getTile(x, y)
             if tile.getInventory().getSize() > 0:
                 return True
             else:
-                self.entity.addStatusMessage('There\'s nothing to pickup.')
+                self.character.addStatusMessage('There\'s nothing to pickup.')
 
     def do(self):
-        x, y = self.game.getCharacterCoords(self.entity)
+        x, y = self.game.getCharacterCoords(self.character)
         tile = self.game.getMap().getTile(x, y)
         item = tile.getInventory().takeFirstItem()
-        self.entity.getInventory().addItem(item)
-        self.entity.addStatusMessage('You pickup a ' + item.getName() + '.')
+        self.character.getInventory().addItem(item)
+        self.character.addStatusMessage('You pickup a ' + item.getName() + '.')
 
-class eat(EntityGameAction):
-    def __init__(self, entity, game, adj):
-        EntityGameAction.__init__(self, entity, game, adj)
+class eat(CharacterGameAction):
+    def __init__(self, character, game, adj):
+        CharacterGameAction.__init__(self, character, game, adj)
 
     def verify(self):
-        item = self.entity.getInventory().getItem(int(self.adj))
+        item = self.character.getInventory().getItem(int(self.adj))
         if item is None:
-            self.entity.addStatusMessage('There\'s nothing there.')
+            self.character.addStatusMessage('There\'s nothing there.')
             return False
         elif item.getProp('edible') != 1:
-            self.entity.addStatusMessage('That isn\'t edible.')
+            self.character.addStatusMessage('That isn\'t edible.')
             return False
         else: return True
 
     def do(self):
-        food = self.entity.getInventory().takeItem(int(self.adj))
-        self.entity.addStatusMessage('You eat the ' + food.getName() + '. It tasted great, really, seriously.')
+        food = self.character.getInventory().takeItem(int(self.adj))
+        self.character.addStatusMessage('You eat the ' + food.getName() + '. It tasted great, really, seriously.')
