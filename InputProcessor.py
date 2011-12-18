@@ -34,10 +34,10 @@ class KeyboardInputProcessor:
     def __init__(self):
         self.partialCommand = None
         self.nextPartialCommands = None
-        
+
         self.inventoryPartialCommands = {}
         for i in range(0, 10): self.inventoryPartialCommands[ord(str(i))] = str(i) # ord('0'):'0', ord('1'):'1', etc
-        
+
         self.inputToCommand = {
             ord('x')    : 'sys quit',
 
@@ -61,7 +61,9 @@ class KeyboardInputProcessor:
             ord(',')    : 'p pickup',
             ord('p')    : 'p pickup',
 
-            ord('e')    : ('sys query Eat What?', 'p eat',  self.inventoryPartialCommands)
+            ord('e')    : ('sys query Eat What?', 'p eat',  self.inventoryPartialCommands),
+
+            ord('d')    : ('sys query Drop What?', 'p drop',  self.inventoryPartialCommands)
         }
 
     def fetchCommands(self):

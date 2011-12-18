@@ -96,6 +96,24 @@ class pickup(CharacterGameAction):
         self.character.getInventory().addItem(item)
         self.character.addStatusMessage('You pickup a ' + item.getName() + '.')
 
+class drop(CharacterGameAction):
+    def __init__(self, character, game, adj):
+        CharacterGameAction.__init__(self, character, game, adj)
+
+    def verify(self):
+        item = self.character.getInventory().getItem(int(self.adj))
+        if item is None:
+            self.character.addStatusMessage('There\'s nothing there.')
+            return False
+        else: return True
+
+    def do(self):
+        x, y = self.game.getCharacterCoords(self.character)
+        tile = self.game.getMap().getTile(x, y)
+        item = self.character.getInventory().takeItem(int(self.adj))
+        tile.getInventory().addItem(item)
+        self.character.addStatusMessage('You dropped a ' + item.getName() + '.')
+
 class eat(CharacterGameAction):
     def __init__(self, character, game, adj):
         CharacterGameAction.__init__(self, character, game, adj)
