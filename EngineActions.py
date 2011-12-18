@@ -21,7 +21,7 @@ class quit(GameAction):
     def verify(self): return True
     def do(self): exit()
 
-class CharacterGameAction(GameAction): # An action that affects an character and/or the game
+class CharacterGameAction(GameAction): # An action that affects a character and/or the game
     def __init__(self, character, game, adj):
         self.character = character
         GameAction.__init__(self, game, adj)
