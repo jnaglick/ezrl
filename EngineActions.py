@@ -57,8 +57,9 @@ class move(CharacterGameAction):
         if 'l' in self.adj: self.game.getCharacterMap().moveLeft(self.character)
         if 'r' in self.adj: self.game.getCharacterMap().moveRight(self.character)
 
-        self.character.incSteps()
-        if len(self.adj) == 2: self.character.incSteps()
+        self.character.incSteps(len(self.adj))
+
+        self.character.incHunger(10 * len(self.adj))
 
         way = {
             'u' : 'up',
@@ -94,6 +95,9 @@ class pickup(CharacterGameAction):
         tile = self.game.getMap().getTile(x, y)
         item = tile.getInventory().takeFirstItem()
         self.character.getInventory().addItem(item)
+
+        self.character.incHunger(1)
+
         self.character.addStatusMessage('You pickup a ' + item.getName() + '.')
 
 class drop(CharacterGameAction):
@@ -112,6 +116,9 @@ class drop(CharacterGameAction):
         tile = self.game.getMap().getTile(x, y)
         item = self.character.getInventory().takeItem(int(self.adj))
         tile.getInventory().addItem(item)
+
+        self.character.incHunger(1)
+
         self.character.addStatusMessage('You dropped a ' + item.getName() + '.')
 
 class eat(CharacterGameAction):
@@ -130,4 +137,20 @@ class eat(CharacterGameAction):
 
     def do(self):
         food = self.character.getInventory().takeItem(int(self.adj))
-        self.character.addStatusMessage('You eat the ' + food.getName() + '. It tasted great, really, seriously.')
+        tasteDescription = self._getTasteDescription(self.character.getHungerPercent())
+        self.character.decHunger(food.getProp('calories'))
+        self.character.addStatusMessage('You eat the ' + food.getName() + '. It tastes ' + tasteDescription + '.')
+
+    def _getTasteDescription(self, hungerPercent):
+        ranges = {
+            100: 'incredible',
+            80:  'amazing',
+            70:  'delicious',
+            60:  'really good',
+            50:  'great',
+            40:  'good',
+            20:  'fine'
+        }
+
+        for r in sorted(ranges.keys()):
+            if hungerPercent <= r: return ranges[r]

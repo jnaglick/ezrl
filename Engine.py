@@ -97,9 +97,9 @@ class Map:
 class ItemTypeToItem:
     def get(self, type):
         item = None
-        if type   == ItemType.apple:    item = Item(ItemType.apple, 'apple', 1, {'edible': 1})
-        elif type == ItemType.banana:   item = Item(ItemType.banana, 'banana', 1, {'edible': 1})
-        elif type == ItemType.pear:     item = Item(ItemType.pear, 'pear', 1, {'edible': 1})
+        if type   == ItemType.apple:    item = Item(ItemType.apple, 'apple', 1, {'edible': 1, 'calories': 300})
+        elif type == ItemType.banana:   item = Item(ItemType.banana, 'banana', 1, {'edible': 1, 'calories': 400})
+        elif type == ItemType.pear:     item = Item(ItemType.pear, 'pear', 1, {'edible': 1, 'calories': 200})
         return item
 
 class ItemType:
@@ -229,16 +229,30 @@ class CharacterMap:
 class Player:
     def __init__(self):
         self.steps = 0
+
+        self.hunger = 0.0
+        self.MAX_HUNGER = 2000.0 # sort of a constant for now, i guess?
+
         self.statusMessages = []
+
         self.inventory = Inventory(10)
 
     def getSteps(self): return self.steps
-    def incSteps(self): self.steps += 1
+    def incSteps(self, i=1): self.steps += i
 
-    def getInventory(self): return self.inventory
+    def getHungerPercent(self):
+        return 100 * self.hunger / self.MAX_HUNGER
+    def incHunger(self, i=1):
+        self.hunger += i
+        if self.hunger > self.MAX_HUNGER: self.hunger = self.MAX_HUNGER
+    def decHunger(self, i=1):
+        self.hunger -= i
+        if self.hunger < 0: self.hunger = 0
 
     def getStatusMessages(self): return self.statusMessages
     def addStatusMessage(self, statusMessage): self.statusMessages.append(statusMessage)
+
+    def getInventory(self): return self.inventory
 
 class Game:
     def __init__(self, map, player, playerStartX, playerStartY):

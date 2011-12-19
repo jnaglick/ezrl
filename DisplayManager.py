@@ -21,24 +21,30 @@ class DisplayManager:
 
         #offsets: where to draw stuff
         self.playerInfoOffset = (3, 1)
-        self.playerStatusMessagesOffset = (3, 57)
+        self.playerStatusMessagesOffset = (3, 58)
         self.playerItemListOffset = (81, 3)
-        self.gameQueryOffset = (3, 61)
-        self.mapOffset = (3, 3)
+        self.gameQueryOffset = (3, 62)
+        self.mapOffset = (3, 4)
 
         self.console = Console(self.C_WIDTH, self.C_HEIGHT, self.C_TITLE)
         self.mapTileToConsoleItem = MapTileToConsoleItem()
+
+    def _getPercentageBar(self, percentage):
+        return ('x' * int(percentage/10)) + ('-' * (10 - int(percentage/10)))
 
     def _drawPlayerInfo(self, player, playerX, playerY):
         playerItemWeight = 0
         for item in player.getInventory().getItems():
             if item is not None:
                 playerItemWeight += item.getWeight()
-        s = 'X:[' + str(playerX) + '] ' + \
+        numbers = \
+            'X:[' + str(playerX) + '] ' + \
             'Y:[' + str(playerY) + '] ' + \
             'Steps:[' + str(player.getSteps()) + '] ' + \
             'Weight:[' + str(playerItemWeight) + ']'
-        c = ConsoleItem(s, Color(128, 128, 128))
+        bars = 'Hunger: [' + self._getPercentageBar(player.getHungerPercent()) + ']'
+
+        c = ConsoleItem([numbers, bars], Color(128, 128, 128))
         self.console.drawConsoleItem(self.playerInfoOffset[0], self.playerInfoOffset[1], c)
 
     def _drawPlayerStatusMessages(self, player):
