@@ -1,11 +1,11 @@
 from DisplayManager import DisplayManager
 from Engine import Engine
-from InputProcessor import KeyboardInputProcessor, ConsoleInputProcessor
+from InputManager import KeymapInputManager
 
 displayManager = DisplayManager()
 engine = Engine()
-inputProcessor = KeyboardInputProcessor()
+inputManager = KeymapInputManager()
 
 while True:
     displayManager.draw(engine.getGame())
-    engine.updateGame(inputProcessor.fetchCommands())
+    engine.updateGame(inputManager.fetchCommand())
